@@ -39,6 +39,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	public final double initMass=10;
 	public final int speedMul=2;
 	public float mass=10;
+	public float massToAdd = 0;
 	public float speed = 1;
 	public float xPos,yPos;
 	
@@ -108,6 +109,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	 */
 	@Override
 	public void render(float delta) {
+		mass+=.1*massToAdd;massToAdd*=.9;
 		if(mass>initMass){mass*=.9999;}
 		Gdx.gl.glClearColor(1,1,1,1);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
@@ -160,7 +162,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		for(int i = 0; i < food.size();i++){
 			if(Intersector.overlaps(t, new Circle(food.get(i).x*step+xOff, food.get(i).y*step+yOff, getRadius(1)*step))){
 				food.remove(i);
-				mass+=1f;
+				massToAdd+=1f;
 				addFood();
 			}
 		}
