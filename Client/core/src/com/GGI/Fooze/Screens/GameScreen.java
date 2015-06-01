@@ -45,6 +45,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	public float speed = 1;
 	public float xPos,yPos;
 	private int x=0;
+	public boolean isSprint=false;
 	
 	public GameScreen(Fooze f){
 		this.f=f;
@@ -73,8 +74,10 @@ public class GameScreen implements Screen ,InputProcessor{
 	 */
 	@Override
 	public void render(float delta) {
+		if(f.die){f.setScreen(new MainScreen(f));}
+		massToAdd+=f.massToAdd;f.massToAdd=0;
 		players.clear();players.addAll(f.players);
-		System.out.println(players.size());
+		//System.out.println(players.size());
 		//food.clear();food.addAll(f.food);
 		//System.out.println(food.size());
 		mass+=.1*massToAdd;massToAdd*=.9;
@@ -86,15 +89,18 @@ public class GameScreen implements Screen ,InputProcessor{
 		speed=(float) (speedMul/Math.pow(mass,(1/3)));
 		view=getRadius(mass)*10;
 		step = h/view;
-		
-		if(xM||xP||yM||yP){
+		if(isSprint){
+			if(f.sprint<=0){isSprint=false;}
+			else{speed*=f.sprintMul;f.sprint--;}}
+		else if(f.sprint<f.sprintMax){f.sprint+=.1f;}
+		System.out.println(f.sprint);
 			if(xM){xPos-=speed;}
 			if(xP){xPos+=speed;}
 			if(yM){yPos-=speed;}
 			if(yP){yPos+=speed;}
 			
 			f.send("Render:"+xPos+":"+yPos+":"+mass);
-		}
+		
 	//	System.out.println("X: " + xPos+ " Y: "+yPos+" M: " + mass);
 		
 		xOff=-xPos*step+(w/2);yOff=-yPos*step+(h/2);
@@ -206,14 +212,14 @@ public class GameScreen implements Screen ,InputProcessor{
 
 	@Override
 	public boolean keyDown(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
+		isSprint=true;
+		return true;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
-		return false;
+		isSprint=false;
+		return true;
 	}
 
 	@Override

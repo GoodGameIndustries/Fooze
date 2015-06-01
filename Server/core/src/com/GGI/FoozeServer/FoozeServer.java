@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.net.ServerSocket;
 import com.badlogic.gdx.net.ServerSocketHints;
 
@@ -76,8 +78,28 @@ public class FoozeServer extends ApplicationAdapter {
 		for(int i = 0; i < clients.size();i++){
 			clients.get(i).se.send("Players"+listToString(clients));	
 		}
+		
+		for(int i = 0; i < clients.size()-1;i++){
+			Reader c1 = clients.get(i);
+			for(int j = i+1;j<clients.size();j++){
+				Reader c2 = clients.get(j);
+			if(Intersector.overlaps(new Circle(c1.x,c1.y,getRadius(c1.mass)), new Circle(c2.x,c2.y,getRadius(c2.mass)))){
+				
+				if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c1.mass)){c2.se.send("lose");c1.se.send("addMass:"+c2.mass);clients.remove(c2);}
+				else if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c2.mass)){c1.se.send("lose");c2.se.send("addMass:"+c1.mass);clients.remove(c1);}
+			}
+			}
+		}
 	}
 	
+		private float dist(float x1, float y1, float x2, float y2) {
+		return (float) Math.sqrt(Math.pow(x1-x2, 2)+Math.pow(y1-y2, 2));
+	}
+
+		private float getRadius(float mass){
+			return (float) Math.sqrt(10*mass/Math.PI);
+		}
+		
 	public String listToString(ArrayList a){
 		String result="";
 		for(int i=0;i<a.size();i++){

@@ -18,6 +18,8 @@ public class MainScreen implements InputProcessor,Screen {
 	
 	public MainScreen(Fooze f){
 		this.f=f;
+		f.die=false;
+		f.nextScreen=false;
 	}
 	
 	@Override

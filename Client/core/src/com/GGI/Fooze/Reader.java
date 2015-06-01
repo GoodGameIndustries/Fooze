@@ -57,6 +57,8 @@ public class Reader implements Runnable{
 					}
 				}
 				
+				if(breakdown[0].equals("lose")){f.die=true;}
+				if(breakdown[0].equals("addMass")){f.massToAdd=Float.parseFloat(breakdown[1]);}
 			} catch (IOException e) {
 				
 			}

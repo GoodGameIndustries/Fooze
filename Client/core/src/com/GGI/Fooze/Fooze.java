@@ -24,9 +24,14 @@ public class Fooze extends Game {
 	public ArrayList<Food> food = new ArrayList<Food>();
 	public ArrayList<Player> players = new ArrayList<Player>();
 	public boolean update=false;
-	
+	public float massToAdd=0;
+	public boolean die=false;
+	public float sprint =50;
+	public float sprintMax = 50;
+	public float sprintMul = 1.5f;
 	@Override
 	public void create () {
+		
 		this.setScreen(new MainScreen(this));
 	}
 
@@ -34,7 +39,7 @@ public class Fooze extends Game {
 		try {
 			s+="\n";
 			sClient.getOutputStream().write(s.getBytes());
-			System.out.println("sent: " + s);
+			//System.out.println("sent: " + s);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
