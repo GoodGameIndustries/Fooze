@@ -58,7 +58,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		xPos=(float) (Math.random()*size*.8+.1*size);
 		yPos=(float) (Math.random()*size*.8+.1*size);
 		
-		
+		populate();
 	}
 	
 	private float getRadius(float mass){
@@ -75,7 +75,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	public void render(float delta) {
 		players.clear();players.addAll(f.players);
 		System.out.println(players.size());
-		food.clear();food.addAll(f.food);
+		//food.clear();food.addAll(f.food);
 		//System.out.println(food.size());
 		mass+=.1*massToAdd;massToAdd*=.9;
 		if(mass>initMass){mass*=.9999;}
@@ -87,10 +87,14 @@ public class GameScreen implements Screen ,InputProcessor{
 		view=getRadius(mass)*10;
 		step = h/view;
 		
-		if(xM){xPos-=speed;}
-		if(xP){xPos+=speed;}
-		if(yM){yPos-=speed;}
-		if(yP){yPos+=speed;}
+		if(xM||xP||yM||yP){
+			if(xM){xPos-=speed;}
+			if(xP){xPos+=speed;}
+			if(yM){yPos-=speed;}
+			if(yP){yPos+=speed;}
+			
+			f.send("Render:"+xPos+":"+yPos+":"+mass);
+		}
 	//	System.out.println("X: " + xPos+ " Y: "+yPos+" M: " + mass);
 		
 		xOff=-xPos*step+(w/2);yOff=-yPos*step+(h/2);
@@ -125,7 +129,8 @@ public class GameScreen implements Screen ,InputProcessor{
 		
 		for(int i =0;i<players.size();i++){
 			Player p = players.get(i);
-			shape.circle(p.x*step+xOff, p.y*step+yOff, getRadius(p.mass)*step);
+			if(p!=null){
+			shape.circle(p.x*step+xOff, p.y*step+yOff, getRadius(p.mass)*step);}
 		}
 		
 		shape.end();
@@ -134,15 +139,15 @@ public class GameScreen implements Screen ,InputProcessor{
 		Circle t = new Circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
 		for(int i = 0; i < food.size();i++){
 			if(Intersector.overlaps(t, new Circle(food.get(i).x*step+xOff, food.get(i).y*step+yOff, getRadius(1)*step))){
-				f.send("eatFood:"+i);
+				
 				food.remove(i);
 				massToAdd+=1f;
-
+				addFood();
 			}
 		}
 		//x++;
 		//if(x>=2){
-		f.send("Render:"+xPos+":"+yPos+":"+mass);
+		
 		//x=0;
 		//}
 	}
@@ -252,6 +257,50 @@ public class GameScreen implements Screen ,InputProcessor{
 	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	private void populate() {
+		//add colors
+		colors.add(new Color(205/255f,74/255f,74/255f,1));
+		colors.add(new Color(204/255f,102/255f,102/255f,1));
+		colors.add(new Color(188/255f,93/255f,88/255f,1));
+		colors.add(new Color(255/255f,83/255f,73/255f,1));
+		colors.add(new Color(253/255f,94/255f,83/255f,1));
+		colors.add(new Color(253/255f,124/255f,110/255f,1));
+		colors.add(new Color(255/255f,110/255f,74/255f,1));
+		colors.add(new Color(255/255f,117/255f,56/255f,1));
+		colors.add(new Color(255/255f,163/255f,67/255f,1));
+		colors.add(new Color(255/255f,207/255f,72/255f,1));
+		colors.add(new Color(252/255f,217/255f,117/255f,1));
+		colors.add(new Color(252/255f,232/255f,131/255f,1));
+		colors.add(new Color(240/255f,232/255f,145/255f,1));
+		colors.add(new Color(197/255f,227/255f,132/255f,1));
+		colors.add(new Color(178/255f,236/255f,93/255f,1));
+		colors.add(new Color(168/255f,228/255f,160/255f,1));
+		colors.add(new Color(118/255f,255/255f,122/255f,1));
+		colors.add(new Color(28/255f,172/255f,120/255f,1));
+		colors.add(new Color(69/255f,206/255f,162/255f,1));
+		colors.add(new Color(128/255f,218/255f,235/255f,1));
+		colors.add(new Color(28/255f,169/255f,201/255f,1));
+		colors.add(new Color(25/255f,116/255f,210/255f,1));
+		colors.add(new Color(31/255f,117/255f,254/255f,1));
+		colors.add(new Color(93/255f,118/255f,203/255f,1));
+		colors.add(new Color(115/255f,102/255f,189/255f,1));
+		colors.add(new Color(116/255f,66/255f,200/255f,1));
+		colors.add(new Color(255/255f,67/255f,164/255f,1));
+		
+		
+		//populate food
+		for(int i=0;i<size;i++){
+			addFood();
+		}
+		System.out.println(food.size());
+	}
+	
+	public void addFood() {
+		food.add(new Food(colors.get((int) (Math.random()*colors.size())).cpy()));
+		food.get(food.size()-1).x=(float) (Math.random()*size);
+		food.get(food.size()-1).y=(float) (Math.random()*size);
 	}
 
 }

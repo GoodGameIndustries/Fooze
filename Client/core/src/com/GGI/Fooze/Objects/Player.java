@@ -11,10 +11,12 @@ import com.badlogic.gdx.math.Vector2;
  */
 public class Player extends Vector2{
 
-	public float mass;
+	public float mass=0;
 	
 	public Player(float mass){
 		this.mass=mass;
+		x=0;
+		y=0;
 	}
 	
 }
