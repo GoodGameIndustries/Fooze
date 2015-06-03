@@ -19,6 +19,7 @@ public class Reader implements Runnable{
 	float mass = 0;
 	float x=0;
 	float y=0;
+	public String name="";
 	
 	public Reader(FoozeServer s,Connection c,Sender se){
 		this.s=s;
@@ -51,7 +52,7 @@ public class Reader implements Runnable{
 	}
 	
 	public String toString(){
-		return x+","+y+","+mass;
+		return name+","+x+","+y+","+mass;
 	}
 }
 

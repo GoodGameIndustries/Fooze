@@ -7,8 +7,8 @@ import com.GGI.Fooze.Fooze;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.height=800;
-		config.width=1080;
+		config.height=675;
+		config.width=1200;
 		new LwjglApplication(new Fooze(), config);
 	}
 }

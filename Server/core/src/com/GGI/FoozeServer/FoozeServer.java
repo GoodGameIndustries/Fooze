@@ -35,6 +35,8 @@ public class FoozeServer extends ApplicationAdapter {
 	public ArrayList<Food> food = new ArrayList<Food>();
 	public ArrayList<Color> colors = new ArrayList<Color>();
 	
+	
+	
 	@Override
 	public void create () {
 		System.out.println("Server Starting");
@@ -52,22 +54,23 @@ public class FoozeServer extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0,0,0,1);
-		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+		//Gdx.gl.glClearColor(0,0,0,1);
+		//Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 		
 		for(int i = 0; i < clients.size();i++){
 			Reader c = clients.get(i);
 			for(int j = 0; j < clients.get(i).messages.size();j++){
 			String message = c.messages.get(j);
 			if(message!=null){
-				System.out.println(message);
+				//System.out.println(message);
 				String[] breakdown = message.split(":");
 				if(breakdown[0].equals("Connect")){c.se.send("Online:"+size+":"+gridx+":"+gridy);}
 			//	if(breakdown[0].equals("eatFood")){s.food.remove(Integer.parseInt(breakdown[1]));s.addFood();}
 				if(breakdown[0].equals("Render")){
-					c.x=Float.parseFloat(breakdown[1]);
-					c.y=Float.parseFloat(breakdown[2]);
-					c.mass=Float.parseFloat(breakdown[3]);
+					c.name=breakdown[1];
+					c.x=Float.parseFloat(breakdown[2]);
+					c.y=Float.parseFloat(breakdown[3]);
+					c.mass=Float.parseFloat(breakdown[4]);
 				//se.send("Food"+s.listToString(s.food));	
 				//se.send("Players"+s.listToString(s.clients));	
 				}
@@ -85,8 +88,18 @@ public class FoozeServer extends ApplicationAdapter {
 				Reader c2 = clients.get(j);
 			if(Intersector.overlaps(new Circle(c1.x,c1.y,getRadius(c1.mass)), new Circle(c2.x,c2.y,getRadius(c2.mass)))){
 				
-				if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c1.mass)){c2.se.send("lose");c1.se.send("addMass:"+c2.mass);clients.remove(c2);}
-				else if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c2.mass)){c1.se.send("lose");c2.se.send("addMass:"+c1.mass);clients.remove(c1);}
+				if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c1.mass)&&c1.mass>c2.mass){
+				for(int m = 0; m < 100;m++){
+					c2.se.send("lose");
+				}
+				c1.se.send("addMass:"+c2.mass);
+				clients.remove(c2);}
+				else if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c2.mass)&&c2.mass>c1.mass){
+					for(int m = 0; m < 100;m++){
+						c1.se.send("lose");
+					}
+					c2.se.send("addMass:"+c1.mass);
+					clients.remove(c1);}
 			}
 			}
 		}

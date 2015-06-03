@@ -29,9 +29,12 @@ public class Fooze extends Game {
 	public float sprint =50;
 	public float sprintMax = 50;
 	public float sprintMul = 1.5f;
+	public Assets assets;
+	public String name="";
+	public ArrayList<String> messages = new ArrayList<String>();
 	@Override
 	public void create () {
-		
+		assets = new Assets(this);
 		this.setScreen(new MainScreen(this));
 	}
 
@@ -49,8 +52,8 @@ public class Fooze extends Game {
 	
 	public void connect(){
 		SocketHints hints = new SocketHints();
-		sClient = Gdx.net.newClientSocket(Protocol.TCP, "localhost", 4443, hints);
-		rClient = Gdx.net.newClientSocket(Protocol.TCP, "localhost", 4444, hints);
+		sClient = Gdx.net.newClientSocket(Protocol.TCP, "52.24.197.64", 4443, hints);
+		rClient = Gdx.net.newClientSocket(Protocol.TCP, "52.24.197.64", 4444, hints);
 		try {
 			sClient.getOutputStream().write("Connect\n".getBytes());
 			String response = new BufferedReader(new InputStreamReader(rClient.getInputStream())).readLine();

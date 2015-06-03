@@ -13,10 +13,12 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  * @author Emmett Deen
@@ -36,6 +38,8 @@ public class GameScreen implements Screen ,InputProcessor{
 	public ArrayList<Food> food = new ArrayList<Food>();
 	public ArrayList<Player> players = new ArrayList<Player>();
 	public ArrayList<Color> colors = new ArrayList<Color>();
+	public SpriteBatch pic;
+	
 	
 	//player vars
 	public final double initMass=10;
@@ -46,11 +50,15 @@ public class GameScreen implements Screen ,InputProcessor{
 	public float xPos,yPos;
 	private int x=0;
 	public boolean isSprint=false;
+	public float theta=361;
+	public boolean flip = false;
 	
 	public GameScreen(Fooze f){
 		this.f=f;
 		this.gridx=f.gridx;this.gridy=f.gridy;this.size=f.size;
-		
+		f.die=false;
+		f.messages.clear();
+		pic=new SpriteBatch();
 		shape=new ShapeRenderer();
 		
 		view=getRadius(mass)*10;
@@ -66,7 +74,16 @@ public class GameScreen implements Screen ,InputProcessor{
 		return (float) Math.sqrt(10*mass/Math.PI);
 	}
 	
-	
+	private void addFood(float x,float y,float r,float g,float b) {
+		f.food.add(new Food(new Color(r,g,b,1)));
+		f.food.get(f.food.size()-1).x=x;
+		f.food.get(f.food.size()-1).y=y;
+	}
+	private void addPlayer(String name, float x, float y,float mass) {
+		f.players.add(new Player(name,mass));
+		f.players.get(f.players.size()-1).x=x;
+		f.players.get(f.players.size()-1).y=y;
+	}
 	
 
 	/* (non-Javadoc)
@@ -74,6 +91,34 @@ public class GameScreen implements Screen ,InputProcessor{
 	 */
 	@Override
 	public void render(float delta) {
+		
+		/**Read messages*/
+		
+		for(int i = 0; i < f.messages.size();i++){
+			String[] breakdown = f.messages.get(i).split(":");
+			if(breakdown[0].equals("Food")){f.food.clear();
+			for(int j=1;j<breakdown.length;j++){
+				String[] b2 = breakdown[j].split(",");
+				addFood(Float.parseFloat(b2[0]),Float.parseFloat(b2[1]),Float.parseFloat(b2[2]),Float.parseFloat(b2[3]),Float.parseFloat(b2[4]));
+			}
+			f.update=true;
+		}
+		if(breakdown[0].equals("Players")){f.players.clear();
+			for(int j=1;j<breakdown.length;j++){
+				String[] b2 = breakdown[j].split(",");
+				addPlayer(b2[0],Float.parseFloat(b2[1]),Float.parseFloat(b2[2]),Float.parseFloat(b2[3]));
+			}
+		}
+		
+		if(breakdown[0].equals("lose")){f.die=true;}
+		if(breakdown[0].equals("addMass")){f.massToAdd=Float.parseFloat(breakdown[1]);}
+	
+		}
+		f.messages.clear();
+		
+		/**end read messages*/
+		
+		
 		if(f.die){f.setScreen(new MainScreen(f));}
 		massToAdd+=f.massToAdd;f.massToAdd=0;
 		players.clear();players.addAll(f.players);
@@ -93,13 +138,21 @@ public class GameScreen implements Screen ,InputProcessor{
 			if(f.sprint<=0){isSprint=false;}
 			else{speed*=f.sprintMul;f.sprint--;}}
 		else if(f.sprint<f.sprintMax){f.sprint+=.1f;}
-		System.out.println(f.sprint);
-			if(xM){xPos-=speed;}
+		//System.out.println(f.sprint);
+			/*if(xM){xPos-=speed;}
 			if(xP){xPos+=speed;}
 			if(yM){yPos-=speed;}
 			if(yP){yPos+=speed;}
+			*/
+		if(theta!=361){
+		if(flip){xPos-=speed*Math.cos(theta);
+		yPos-=speed*Math.sin(theta);}
 			
-			f.send("Render:"+xPos+":"+yPos+":"+mass);
+		else{xPos+=speed*Math.cos(theta);
+		yPos+=speed*Math.sin(theta);}
+		}
+		
+			f.send("Render:"+f.name+":"+xPos+":"+yPos+":"+mass);
 		
 	//	System.out.println("X: " + xPos+ " Y: "+yPos+" M: " + mass);
 		
@@ -130,16 +183,45 @@ public class GameScreen implements Screen ,InputProcessor{
 			shape.circle(food.get(i).x*step+xOff, food.get(i).y*step+yOff, getRadius(1)*step);
 		}
 		
-		shape.setColor(Color.RED);
+		
 		//shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
 		
 		for(int i =0;i<players.size();i++){
 			Player p = players.get(i);
 			if(p!=null){
-			shape.circle(p.x*step+xOff, p.y*step+yOff, getRadius(p.mass)*step);}
+				
+			shape.setColor(p.color.r*.8f,p.color.g*.8f,p.color.b*.8f,1);
+			shape.circle(p.x*step+xOff, p.y*step+yOff, getRadius(p.mass)*step);
+			shape.setColor(p.color);
+			shape.circle(p.x*step+xOff, p.y*step+yOff, getRadius(p.mass)*step*.9f);
+			
+			
+			}
 		}
 		
+		if(isSprint){shape.setColor(Color.RED);}else{shape.setColor(Color.GREEN);}
+		shape.rect(.925f*w, .15f*h, .025f*w, (f.sprint/f.sprintMax)*.8f*h);
+		
+		shape.setColor(Color.DARK_GRAY);
+		shape.circle(.9375f*w, .08f*h, .05f*h);
+		shape.setColor(Color.GRAY);
+		shape.circle(.9375f*w, .08f*h, .04f*h);
 		shape.end();
+		
+		pic.begin();
+		for(int i =0;i<players.size();i++){
+			Player p = players.get(i);
+			if(p!=null&&p.mass!=0){
+			f.assets.font.setScale(h*getRadius(p.mass)*step/500000);
+			f.assets.font.setColor(Color.WHITE);
+			
+			f.assets.font.draw(pic, p.name, (p.x*step+xOff)-(f.assets.font.getBounds(p.name).width/2), (p.y*step+yOff)+(f.assets.font.getBounds(p.name).height/2));
+			//System.out.println(p.name);
+			
+			}
+		}
+		pic.end();
+		
 		
 		//eat food
 		Circle t = new Circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
@@ -230,25 +312,43 @@ public class GameScreen implements Screen ,InputProcessor{
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
+		//flip=false;
+		screenY=(int) (h-screenY);
+		//System.out.println(pointer);
+		//f.name=""+pointer;
+		if(Intersector.overlaps(new Circle(.9375f*w, .08f*h, .05f*h), new Rectangle(screenX,screenY,1,1))){isSprint = true;}
+		else{
+		theta = (float) Math.atan((screenY-(h/2))/(screenX-(w/2)));
+		if(screenX<w/2){flip=true;}else{flip=false;}
+		}
+		
+		return true;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
+		isSprint=false;
+		screenY=(int) (h-screenY);
+		theta = 361;
+		return true;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
+		//flip=false;
+		screenY=(int) (h-screenY);
+		if(Intersector.overlaps(new Circle(.9375f*w, .08f*h, .05f*h), new Rectangle(screenX,screenY,1,1))){isSprint = true;}
+		else{
+		theta = (float) Math.atan((screenY-(h/2))/(screenX-(w/2)));
+		if(screenX<w/2){flip=true;}else{flip=false;}
+		}
+		
+		return true;
 	}
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		screenY=(int) (h-screenY);
+	/*	screenY=(int) (h-screenY);
 		
 		xM=false;xP=false;yM=false;yP=false;
 		
@@ -256,6 +356,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		if(screenX>(2*w/3)){xP=true;}
 		if(screenY<h/3){yM=true;}
 		if(screenY>(2*h/3)){yP=true;}
+	*/
 		return true;
 	}
 

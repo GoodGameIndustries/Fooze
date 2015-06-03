@@ -7,7 +7,7 @@ public class Commands implements Runnable{
 
 	public FoozeServer f;
 	private Scanner scan = new Scanner(System.in);
-	private String db = "Forged Database: ";
+	private String db = "Fooze Server: ";
 	
 public Commands(FoozeServer f){
 	this.f=f;
