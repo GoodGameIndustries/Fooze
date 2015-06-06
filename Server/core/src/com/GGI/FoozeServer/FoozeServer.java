@@ -34,6 +34,7 @@ public class FoozeServer extends ApplicationAdapter {
 	
 	public ArrayList<Food> food = new ArrayList<Food>();
 	public ArrayList<Color> colors = new ArrayList<Color>();
+	private int count = 0;
 	
 	
 	
@@ -64,7 +65,7 @@ public class FoozeServer extends ApplicationAdapter {
 			if(message!=null){
 				//System.out.println(message);
 				String[] breakdown = message.split(":");
-				if(breakdown[0].equals("Connect")){c.se.send("Online:"+size+":"+gridx+":"+gridy);}
+				if(breakdown[0].equals("Connect")){c.se.send("Online:"+size+":"+gridx+":"+gridy+":"+count %100000);}
 			//	if(breakdown[0].equals("eatFood")){s.food.remove(Integer.parseInt(breakdown[1]));s.addFood();}
 				if(breakdown[0].equals("Render")){
 					c.name=breakdown[1];

@@ -43,9 +43,23 @@ public class MainScreen implements InputProcessor,Screen {
 	
 	@Override
 	public void render(float delta) {
+		//System.out.println(f.r);
 		if(f.nextScreen){f.setScreen(new GameScreen(f));f.nextScreen=false;}
 		Gdx.gl.glClearColor(1,1,1,1);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+		
+		for(int i = 0; i < f.messages.size();i++){
+			System.out.println(f.messages.get(i));
+			String[] breakdown = f.messages.get(i).split(":");
+			if(breakdown[0].equals("Online")){f.nextScreen=true;
+			f.size=Float.parseFloat(breakdown[1]);
+			f.gridx=Float.parseFloat(breakdown[2]);
+			f.gridy=Float.parseFloat(breakdown[3]);
+			f.ID=Integer.parseInt(breakdown[4]);
+			}
+		}
+		
+	f.messages.clear();
 		
 		shape.begin(ShapeType.Line);
 		shape.setColor(Color.GRAY);

@@ -1,6 +1,6 @@
 package com.GGI.Fooze;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -13,10 +13,12 @@ public class Reader implements Runnable{
 
 	public Socket r;
 	public Fooze f;
+	public BufferedReader br;
 	
 	public Reader(Fooze f, Socket r){
 		this.f=f;
 		this.r=r;
+		br= new BufferedReader(new InputStreamReader(r.getInputStream()));
 	}
 	
 	
@@ -27,17 +29,12 @@ public class Reader implements Runnable{
 			String message;
 			
 			try {
-				message = new BufferedReader(new InputStreamReader(r.getInputStream())).readLine();
-				System.out.println(message);
-				String[] breakdown = message.split(":");
-				if(breakdown[0].equals("Online")){f.nextScreen=true;
-				f.size=Float.parseFloat(breakdown[1]);
-				f.gridx=Float.parseFloat(breakdown[2]);
-				f.gridy=Float.parseFloat(breakdown[3]);
-				}
-				else{
+				message =br.readLine();
+				//System.out.println(message);
+				
 					f.messages.add(message);
-				}
+					f.r++;
+				
 				} catch (IOException e) {
 				
 			}

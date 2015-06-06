@@ -79,8 +79,8 @@ public class GameScreen implements Screen ,InputProcessor{
 		f.food.get(f.food.size()-1).x=x;
 		f.food.get(f.food.size()-1).y=y;
 	}
-	private void addPlayer(String name, float x, float y,float mass) {
-		f.players.add(new Player(name,mass));
+	private void addPlayer(String name, float x, float y,float mass,int ID) {
+		f.players.add(new Player(name,mass,ID));
 		f.players.get(f.players.size()-1).x=x;
 		f.players.get(f.players.size()-1).y=y;
 	}
@@ -91,10 +91,10 @@ public class GameScreen implements Screen ,InputProcessor{
 	 */
 	@Override
 	public void render(float delta) {
-		
+		System.out.println(f.r);
 		/**Read messages*/
-		
-		for(int i = 0; i < f.messages.size();i++){
+		if(f.messages.size()>0){
+		for(int i = 0; i <Math.round((f.messages.size()/10)+1);i++){
 			String[] breakdown = f.messages.get(i).split(":");
 			if(breakdown[0].equals("Food")){f.food.clear();
 			for(int j=1;j<breakdown.length;j++){
@@ -106,15 +106,15 @@ public class GameScreen implements Screen ,InputProcessor{
 		if(breakdown[0].equals("Players")){f.players.clear();
 			for(int j=1;j<breakdown.length;j++){
 				String[] b2 = breakdown[j].split(",");
-				addPlayer(b2[0],Float.parseFloat(b2[1]),Float.parseFloat(b2[2]),Float.parseFloat(b2[3]));
+				addPlayer(b2[0],Float.parseFloat(b2[1]),Float.parseFloat(b2[2]),Float.parseFloat(b2[3]),Integer.parseInt(b2[4]));
 			}
 		}
 		
 		if(breakdown[0].equals("lose")){f.die=true;}
 		if(breakdown[0].equals("addMass")){f.massToAdd=Float.parseFloat(breakdown[1]);}
-	
+		f.messages.remove(i);
 		}
-		f.messages.clear();
+		}
 		
 		/**end read messages*/
 		
@@ -183,12 +183,14 @@ public class GameScreen implements Screen ,InputProcessor{
 			shape.circle(food.get(i).x*step+xOff, food.get(i).y*step+yOff, getRadius(1)*step);
 		}
 		
-		
-		//shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
+		shape.setColor(f.color.r*.8f,f.color.g*.8f,f.color.b*.8f,1);
+		shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
+		shape.setColor(f.color);
+		shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step*.9f);
 		
 		for(int i =0;i<players.size();i++){
 			Player p = players.get(i);
-			if(p!=null){
+			if(p!=null&&p.ID!=f.ID){
 				
 			shape.setColor(p.color.r*.8f,p.color.g*.8f,p.color.b*.8f,1);
 			shape.circle(p.x*step+xOff, p.y*step+yOff, getRadius(p.mass)*step);

@@ -11,6 +11,7 @@ import com.GGI.Fooze.Screens.MainScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net.Protocol;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
 
@@ -32,6 +33,9 @@ public class Fooze extends Game {
 	public Assets assets;
 	public String name="";
 	public ArrayList<String> messages = new ArrayList<String>();
+	public int r = 0;
+	public int ID = -1;
+	public Color color = Color.RED;
 	@Override
 	public void create () {
 		assets = new Assets(this);
@@ -52,8 +56,8 @@ public class Fooze extends Game {
 	
 	public void connect(){
 		SocketHints hints = new SocketHints();
-		sClient = Gdx.net.newClientSocket(Protocol.TCP, "52.24.197.64", 4443, hints);
-		rClient = Gdx.net.newClientSocket(Protocol.TCP, "52.24.197.64", 4444, hints);
+		sClient = Gdx.net.newClientSocket(Protocol.TCP, "localhost", 4443, hints);
+		rClient = Gdx.net.newClientSocket(Protocol.TCP, "localhost", 4444, hints);
 		try {
 			sClient.getOutputStream().write("Connect\n".getBytes());
 			String response = new BufferedReader(new InputStreamReader(rClient.getInputStream())).readLine();
