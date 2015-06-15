@@ -35,7 +35,16 @@ public class Fooze extends Game {
 	public ArrayList<String> messages = new ArrayList<String>();
 	public int r = 0;
 	public int ID = -1;
-	public Color color = Color.RED;
+	public Color color = Color.GREEN;
+	private ActionResolver actionResolver;
+	public Fooze(ActionResolver androidLauncher){
+		this.actionResolver=androidLauncher;
+	}
+	
+	public void popup(){
+		actionResolver.showOrLoadInterstital();
+	}
+	
 	@Override
 	public void create () {
 		assets = new Assets(this);
@@ -56,8 +65,8 @@ public class Fooze extends Game {
 	
 	public void connect(){
 		SocketHints hints = new SocketHints();
-		sClient = Gdx.net.newClientSocket(Protocol.TCP, "localhost", 4443, hints);
-		rClient = Gdx.net.newClientSocket(Protocol.TCP, "localhost", 4444, hints);
+		sClient = Gdx.net.newClientSocket(Protocol.TCP, "52.11.36.209", 4443, hints);
+		rClient = Gdx.net.newClientSocket(Protocol.TCP, "52.11.36.209", 4444, hints);
 		try {
 			sClient.getOutputStream().write("Connect\n".getBytes());
 			String response = new BufferedReader(new InputStreamReader(rClient.getInputStream())).readLine();

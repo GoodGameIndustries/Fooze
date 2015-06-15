@@ -74,6 +74,7 @@ public class FoozeServer extends ApplicationAdapter {
 					c.y=Float.parseFloat(breakdown[3]);
 					c.mass=Float.parseFloat(breakdown[4]);
 					c.ID=Integer.parseInt(breakdown[5]);
+					c.color=new Color(Float.parseFloat(breakdown[6]),Float.parseFloat(breakdown[7]),Float.parseFloat(breakdown[8]),1);
 				//se.send("Food"+s.listToString(s.food));	
 				//se.send("Players"+s.listToString(s.clients));	
 				}

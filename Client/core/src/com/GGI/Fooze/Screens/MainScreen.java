@@ -30,6 +30,7 @@ public class MainScreen implements InputProcessor,Screen {
 	public float w = Gdx.graphics.getWidth(),h=Gdx.graphics.getHeight();
 	private String u = "";
 	private boolean type=false;
+	private int select = 0;
 	
 	public MainScreen(Fooze f){
 		this.f=f;
@@ -79,11 +80,25 @@ public class MainScreen implements InputProcessor,Screen {
 		shape.circle(.7f*w, .7f*h, .02f*w);
 		shape.setColor(Color.BLACK);
 		shape.triangle(.6925f*w, .72f*h, .6925f*w, .68f*h, .7125f*w, .7f*h);
+		
+		shape.setColor(Color.BLACK);
+		shape.rect(.268f*w, .5f*h, .05f*w, .05f*w);
+		shape.setColor(Color.RED);
+		shape.rect(.338f*w, .5f*h, .05f*w, .05f*w);
+		shape.setColor(Color.GREEN);
+		shape.rect(.408f*w, .5f*h, .05f*w, .05f*w);
+		shape.setColor(Color.BLUE);
+		shape.rect(.478f*w, .5f*h, .05f*w, .05f*w);
+		shape.setColor(Color.PURPLE);
+		shape.rect(.548f*w, .5f*h, .05f*w, .05f*w);
+		shape.setColor(Color.YELLOW);
+		shape.rect(.618f*w, .5f*h, .05f*w, .05f*w);
 		shape.end();
 		
 		shape.begin(ShapeType.Line);
 		shape.setColor(Color.BLACK);
 		shape.rect(.268f*w,.66f*h,.4f*w,.08f*h);
+		shape.rect((.268f+(select *.07f))*w,.5f*h,.05f*w,.05f*w);
 		shape.end();
 		
 		pic.begin();
@@ -175,7 +190,15 @@ public class MainScreen implements InputProcessor,Screen {
 		Rectangle touch = new Rectangle(screenX,screenY,1,1);
 		if(!type){
 		
-		Rectangle name = new Rectangle(.268f*w,.66f*h,.4f*w,.08f*h);
+		//Color select
+			if(Intersector.overlaps(touch, new Rectangle(.268f*w,.5f*h,.05f*w,.05f*w))){select=0;}
+			else if(Intersector.overlaps(touch, new Rectangle(.338f*w,.5f*h,.05f*w,.05f*w))){select=1;}
+			else if(Intersector.overlaps(touch, new Rectangle(.408f*w,.5f*h,.05f*w,.05f*w))){select=2;}
+			else if(Intersector.overlaps(touch, new Rectangle(.478f*w,.5f*h,.05f*w,.05f*w))){select=3;}
+			else if(Intersector.overlaps(touch, new Rectangle(.548f*w,.5f*h,.05f*w,.05f*w))){select=4;}
+			else if(Intersector.overlaps(touch, new Rectangle(.618f*w,.5f*h,.05f*w,.05f*w))){select=5;}
+			
+			Rectangle name = new Rectangle(.268f*w,.66f*h,.4f*w,.08f*h);
 		if(Intersector.overlaps(touch, name)){
 			type = true;
 			Gdx.input.setOnscreenKeyboardVisible(true);
@@ -187,6 +210,15 @@ public class MainScreen implements InputProcessor,Screen {
 		}
 		if(Intersector.overlaps(new Circle(.7f*w, .7f*h, .02f*w), touch)){
 		f.name=u;
+		switch(select){
+		case 0:f.color=Color.BLACK;break;
+		case 1:f.color=Color.RED;break;
+		case 2:f.color=Color.GREEN;break;
+		case 3:f.color=Color.BLUE;break;
+		case 4:f.color=Color.PURPLE;break;
+		case 5:f.color=Color.YELLOW;break;
+		}
+		
 		f.connect();
 		f.send("Connect");
 		}

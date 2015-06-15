@@ -17,10 +17,11 @@ public class Player extends Vector2{
 	public Color color = Color.RED;
 	public int ID = -1;
 	
-	public Player(String name, float mass, int ID){
+	public Player(String name, float mass, int ID, Color color){
 		this.name=name;
 		this.mass=mass;
 		this.ID=ID;
+		this.color=color;
 		x=0;
 		y=0;
 	}

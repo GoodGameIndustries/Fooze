@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 
 public class Reader implements Runnable{
 
@@ -22,6 +23,7 @@ public class Reader implements Runnable{
 	public String name="";
 	public BufferedReader br;
 	public int ID=-1;
+	public Color color = Color.GRAY;
 	
 	public Reader(FoozeServer s,Connection c,Sender se){
 		this.s=s;
@@ -55,7 +57,7 @@ public class Reader implements Runnable{
 	}
 	
 	public String toString(){
-		return name+","+x+","+y+","+mass+","+ID;
+		return name+","+x+","+y+","+mass+","+ID+","+color.r+","+color.g+","+color.b;
 	}
 }
 

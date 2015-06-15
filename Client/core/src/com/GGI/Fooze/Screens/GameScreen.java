@@ -43,7 +43,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	
 	//player vars
 	public final double initMass=10;
-	public final int speedMul=2;
+	public final double speedMul=3;
 	public float mass=10;
 	public float massToAdd = 0;
 	public float speed = 1;
@@ -71,7 +71,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	}
 	
 	private float getRadius(float mass){
-		return (float) Math.sqrt(10*mass/Math.PI);
+		return (float) Math.sqrt(12*mass/Math.PI);
 	}
 	
 	private void addFood(float x,float y,float r,float g,float b) {
@@ -79,8 +79,8 @@ public class GameScreen implements Screen ,InputProcessor{
 		f.food.get(f.food.size()-1).x=x;
 		f.food.get(f.food.size()-1).y=y;
 	}
-	private void addPlayer(String name, float x, float y,float mass,int ID) {
-		f.players.add(new Player(name,mass,ID));
+	private void addPlayer(String name, float x, float y,float mass,int ID,Color color) {
+		f.players.add(new Player(name,mass,ID,color));
 		f.players.get(f.players.size()-1).x=x;
 		f.players.get(f.players.size()-1).y=y;
 	}
@@ -91,7 +91,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	 */
 	@Override
 	public void render(float delta) {
-		System.out.println(f.r);
+		//System.out.println(f.r);
 		/**Read messages*/
 		if(f.messages.size()>0){
 		for(int i = 0; i <Math.round((f.messages.size()/10)+1);i++){
@@ -106,7 +106,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		if(breakdown[0].equals("Players")){f.players.clear();
 			for(int j=1;j<breakdown.length;j++){
 				String[] b2 = breakdown[j].split(",");
-				addPlayer(b2[0],Float.parseFloat(b2[1]),Float.parseFloat(b2[2]),Float.parseFloat(b2[3]),Integer.parseInt(b2[4]));
+				addPlayer(b2[0],Float.parseFloat(b2[1]),Float.parseFloat(b2[2]),Float.parseFloat(b2[3]),Integer.parseInt(b2[4]),new Color(Float.parseFloat(b2[5]),Float.parseFloat(b2[6]),Float.parseFloat(b2[7]),1));
 			}
 		}
 		
@@ -117,9 +117,17 @@ public class GameScreen implements Screen ,InputProcessor{
 		}
 		
 		/**end read messages*/
+		for(int j =0;j<f.players.size();j++){
+		for(int i =0;i<f.players.size()-1;i++){
+			if(f.players.get(i+1).mass>f.players.get(i).mass){
+				Player temp = f.players.get(i+1);
+				f.players.remove(i+1);
+				f.players.add(i, temp);
+			}
+		}
+		}
 		
-		
-		if(f.die){f.setScreen(new MainScreen(f));}
+		if(f.die){f.popup();f.setScreen(new MainScreen(f));}
 		massToAdd+=f.massToAdd;f.massToAdd=0;
 		players.clear();players.addAll(f.players);
 		//System.out.println(players.size());
@@ -131,7 +139,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 		
 		//Cam Update
-		speed=(float) (speedMul/Math.pow(mass,(1/3)));
+		speed=(float) (speedMul/Math.pow(mass,(1/2.9)));
 		view=getRadius(mass)*10;
 		step = h/view;
 		if(isSprint){
@@ -152,7 +160,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		yPos+=speed*Math.sin(theta);}
 		}
 		
-			f.send("Render:"+f.name+":"+xPos+":"+yPos+":"+mass);
+			f.send("Render:"+f.name+":"+xPos+":"+yPos+":"+mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
 		
 	//	System.out.println("X: " + xPos+ " Y: "+yPos+" M: " + mass);
 		
@@ -183,10 +191,7 @@ public class GameScreen implements Screen ,InputProcessor{
 			shape.circle(food.get(i).x*step+xOff, food.get(i).y*step+yOff, getRadius(1)*step);
 		}
 		
-		shape.setColor(f.color.r*.8f,f.color.g*.8f,f.color.b*.8f,1);
-		shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
-		shape.setColor(f.color);
-		shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step*.9f);
+		
 		
 		for(int i =0;i<players.size();i++){
 			Player p = players.get(i);
@@ -199,21 +204,29 @@ public class GameScreen implements Screen ,InputProcessor{
 			
 			
 			}
+			
+			shape.setColor(f.color.r*.8f,f.color.g*.8f,f.color.b*.8f,1);
+			shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
+			shape.setColor(f.color);
+			shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step*.9f);
 		}
 		
 		if(isSprint){shape.setColor(Color.RED);}else{shape.setColor(Color.GREEN);}
-		shape.rect(.925f*w, .15f*h, .025f*w, (f.sprint/f.sprintMax)*.8f*h);
+		shape.rect(.925f*w, .15f*h, .025f*w, (f.sprint/f.sprintMax)*.7f*h);
 		
 		shape.setColor(Color.DARK_GRAY);
 		shape.circle(.9375f*w, .08f*h, .05f*h);
 		shape.setColor(Color.GRAY);
 		shape.circle(.9375f*w, .08f*h, .04f*h);
+		
+		//shape.rect(0, 9*h/10, w, h/10);
+		
 		shape.end();
 		
 		pic.begin();
 		for(int i =0;i<players.size();i++){
 			Player p = players.get(i);
-			if(p!=null&&p.mass!=0){
+			if(p!=null&&p.mass!=0&&p.ID!=f.ID){
 			f.assets.font.setScale(h*getRadius(p.mass)*step/500000);
 			f.assets.font.setColor(Color.WHITE);
 			
@@ -222,6 +235,26 @@ public class GameScreen implements Screen ,InputProcessor{
 			
 			}
 		}
+		
+		f.assets.font.setScale(h*getRadius(mass)*step/500000);
+		f.assets.font.setColor(Color.WHITE);
+		f.assets.font.draw(pic, f.name, (xPos*step+xOff)-(f.assets.font.getBounds(f.name).width/2), (yPos*step+yOff)+(f.assets.font.getBounds(f.name).height/2));
+		
+		
+		f.assets.font.setScale(h/5000);
+		f.assets.font.setColor(Color.BLACK);
+		f.assets.font.draw(pic, "Leaderboard:", 0, h);
+		f.assets.font.setColor(Color.YELLOW);
+		if(f.players.size()>0){f.assets.font.draw(pic, "1. "+f.players.get(0).name, 0, 19*h/20);}
+		f.assets.font.setColor(Color.LIGHT_GRAY);
+		if(f.players.size()>1){f.assets.font.draw(pic, "2. "+f.players.get(1).name, 0, 18*h/20);}
+		f.assets.font.setColor(new Color(139f/255f,69f/255f,19f/255f,1));
+		if(f.players.size()>2){f.assets.font.draw(pic, "3. "+f.players.get(2).name, 0, 17*h/20);}
+		f.assets.font.setColor(Color.BLACK);
+		if(f.players.size()>3){f.assets.font.draw(pic, "4. "+f.players.get(3).name, 0, 16*h/20);}
+		if(f.players.size()>4){f.assets.font.draw(pic, "5. "+f.players.get(4).name, 0, 15*h/20);}
+		if(f.players.size()>5){f.assets.font.draw(pic, "6. "+f.players.get(5).name, 0, 14*h/20);}
+		
 		pic.end();
 		
 		
