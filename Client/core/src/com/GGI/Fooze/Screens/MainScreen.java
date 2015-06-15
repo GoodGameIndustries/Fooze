@@ -220,7 +220,9 @@ public class MainScreen implements InputProcessor,Screen {
 		}
 		
 		f.connect();
+		for(int i = 0;i<100;i++){
 		f.send("Connect");
+		}
 		}
 		
 		return true;

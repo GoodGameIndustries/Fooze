@@ -26,8 +26,8 @@ import com.google.android.gms.ads.InterstitialAd;
 
 public class AndroidLauncher extends AndroidApplication implements ActionResolver {
 
-  private static final String AD_UNIT_ID_BANNER = "ca-app-pub-4179095773889612/8667089686";
-  private static final String AD_UNIT_ID_INTERSTITIAL = "ca-app-pub-4179095773889612/7062272080";
+  private static final String AD_UNIT_ID_BANNER = "ca-app-pub-4179095773889612/7883817280";
+  private static final String AD_UNIT_ID_INTERSTITIAL = "ca-app-pub-4179095773889612/9360550483";
   private static final String GOOGLE_PLAY_URL = "https://play.google.com/store/apps/developer?id=Good%20Game%20Industries&hl=en";
   protected AdView adView;
   protected View gameView;

@@ -32,7 +32,7 @@ public class FoozeServer extends ApplicationAdapter {
 	
 	//world vars
 	public float gridx =20,gridy=20;
-	public float size=2000;
+	public float size=500;
 	
 	public ArrayList<Food> food = new ArrayList<Food>();
 	public ArrayList<Color> colors = new ArrayList<Color>();
@@ -64,20 +64,10 @@ public class FoozeServer extends ApplicationAdapter {
 			for(int j = 0; j < clients.get(i).messages.size();j++){
 			String message = c.messages.get(j);
 			if(message!=null){
-				//System.out.println(message);
-				String[] breakdown = message.split(":");
-				if(breakdown[0].equals("Connect")){for(int m = 0;m<100;m++){c.se.send("Online:"+size+":"+gridx+":"+gridy+":"+count);}count++;if(count>100000){count=0;} System.out.println(count);}
-			//	if(breakdown[0].equals("eatFood")){s.food.remove(Integer.parseInt(breakdown[1]));s.addFood();}
-				if(breakdown[0].equals("Render")){
-					c.name=breakdown[1];
-					c.x=Float.parseFloat(breakdown[2]);
-					c.y=Float.parseFloat(breakdown[3]);
-					c.mass=Float.parseFloat(breakdown[4]);
-					c.ID=Integer.parseInt(breakdown[5]);
-					c.color=new Color(Float.parseFloat(breakdown[6]),Float.parseFloat(breakdown[7]),Float.parseFloat(breakdown[8]),1);
-				//se.send("Food"+s.listToString(s.food));	
-				//se.send("Players"+s.listToString(s.clients));	
-				}
+				System.out.println(message);
+				//String[] breakdown = message.split(":");
+				//	if(breakdown[0].equals("eatFood")){s.food.remove(Integer.parseInt(breakdown[1]));s.addFood();}
+				
 				}
 			c.messages.clear();
 		}
@@ -90,7 +80,7 @@ public class FoozeServer extends ApplicationAdapter {
 			Reader c1 = clients.get(i);
 			for(int j = i+1;j<clients.size();j++){
 				Reader c2 = clients.get(j);
-			if(Intersector.overlapCircles(new Circle(c1.x,c1.y,getRadius(c1.mass)), new Circle(c2.x,c2.y,getRadius(c2.mass)))){
+			//if(Intersector.overlapCircles(new Circle(c1.x,c1.y,getRadius(c1.mass)), new Circle(c2.x,c2.y,getRadius(c2.mass)))){
 				
 				if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c1.mass)&&c1.mass>c2.mass){
 				for(int m = 0; m < 100;m++){
@@ -104,7 +94,7 @@ public class FoozeServer extends ApplicationAdapter {
 					}
 					c2.se.send("addMass:"+c1.mass);
 					clients.remove(c1);}
-			}
+			//}
 			}
 		}
 		

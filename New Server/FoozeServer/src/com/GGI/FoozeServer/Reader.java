@@ -24,7 +24,8 @@ public class Reader implements Runnable{
 	public BufferedReader br;
 	public int ID=-1;
 	public Color color = Color.GRAY;
-	
+	public long lastTime = System.currentTimeMillis();
+	public boolean connected = false;
 	public Reader(FoozeServer s,Connection c,Sender se){
 		this.s=s;
 		this.c=c;
@@ -42,8 +43,32 @@ public class Reader implements Runnable{
 			try {
 				
 				message = br.readLine();
-				messages.add(message);
-
+				if(message!=null){
+				lastTime = System.currentTimeMillis();
+				String[] breakdown=message.split(":");
+				if(breakdown[0].equals("Render")){
+					name=breakdown[1];
+					x=Float.parseFloat(breakdown[2]);
+					y=Float.parseFloat(breakdown[3]);
+					mass=Float.parseFloat(breakdown[4]);
+					ID=Integer.parseInt(breakdown[5]);
+					color=new Color(Float.parseFloat(breakdown[6]),Float.parseFloat(breakdown[7]),Float.parseFloat(breakdown[8]),1);
+				//se.send("Food"+s.listToString(s.food));	
+				//se.send("Players"+s.listToString(s.clients));	
+				}
+				else if(breakdown[0].equals("Connect")&&!connected){for(int m = 0;m<100;m++){se.send("Online:"+s.size+":"+s.gridx+":"+s.gridy+":"+s.count);}s.count++;if(s.count>100000){s.count=0;} System.out.println(s.count);connected=true;}
+				
+				else{messages.add(message);}
+				}
+				
+				if(lastTime>0){
+					if(System.currentTimeMillis()-lastTime>2000&&!connected){
+						s.clients.remove(this);
+					}
+					if(System.currentTimeMillis()-lastTime>120000){
+						s.clients.remove(this);
+					}
+				}
 				//send statement with error check:  if(se.send("Received")){break;}
 			} catch (IOException e) {
 				
