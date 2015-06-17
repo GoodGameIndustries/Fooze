@@ -6,6 +6,7 @@ package com.GGI.Fooze.Screens;
 import java.util.ArrayList;
 
 import com.GGI.Fooze.Fooze;
+import com.GGI.Fooze.Synch;
 import com.GGI.Fooze.Objects.Food;
 import com.GGI.Fooze.Objects.Player;
 import com.badlogic.gdx.Gdx;
@@ -44,14 +45,14 @@ public class GameScreen implements Screen ,InputProcessor{
 	//player vars
 	public final double initMass=10;
 	public final double speedMul=3;
-	public float mass=10;
+	
 	public float massToAdd = 0;
 	public float speed = 1;
-	public float xPos,yPos;
 	private int x=0;
 	public boolean isSprint=false;
 	public float theta=361;
 	public boolean flip = false;
+	public Thread synch;
 	
 	public GameScreen(Fooze f){
 		this.f=f;
@@ -61,13 +62,15 @@ public class GameScreen implements Screen ,InputProcessor{
 		pic=new SpriteBatch();
 		shape=new ShapeRenderer();
 		
-		view=getRadius(mass)*10;
+		view=getRadius(f.mass)*10;
 		step = h/view;
 		System.out.println(view);
-		xPos=(float) (Math.random()*size*.8+.1*size);
-		yPos=(float) (Math.random()*size*.8+.1*size);
+		f.xPos=(float) (Math.random()*size*.8+.1*size);
+		f.yPos=(float) (Math.random()*size*.8+.1*size);
 		
 		populate();
+		synch=new Thread(new Synch(f));
+		synch.start();
 	}
 	
 	private float getRadius(float mass){
@@ -79,11 +82,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		f.food.get(f.food.size()-1).x=x;
 		f.food.get(f.food.size()-1).y=y;
 	}
-	private void addPlayer(String name, float x, float y,float mass,int ID,Color color) {
-		f.players.add(new Player(name,mass,ID,color));
-		f.players.get(f.players.size()-1).x=x;
-		f.players.get(f.players.size()-1).y=y;
-	}
+	
 	
 
 	/* (non-Javadoc)
@@ -91,10 +90,12 @@ public class GameScreen implements Screen ,InputProcessor{
 	 */
 	@Override
 	public void render(float delta) {
+		f.isRender=true;
 		//System.out.println(f.r);
 		/**Read messages*/
 		if(f.messages.size()>0){
 		for(int i = 0; i <Math.round((f.messages.size()/10)+1);i++){
+			if(f.messages.get(i)!=null){
 			String[] breakdown = f.messages.get(i).split(":");
 			if(breakdown[0].equals("Food")){f.food.clear();
 			for(int j=1;j<breakdown.length;j++){
@@ -103,20 +104,23 @@ public class GameScreen implements Screen ,InputProcessor{
 			}
 			f.update=true;
 		}
-		if(breakdown[0].equals("Players")){f.players.clear();
-			for(int j=1;j<breakdown.length;j++){
-				String[] b2 = breakdown[j].split(",");
-				addPlayer(b2[0],Float.parseFloat(b2[1]),Float.parseFloat(b2[2]),Float.parseFloat(b2[3]),Integer.parseInt(b2[4]),new Color(Float.parseFloat(b2[5]),Float.parseFloat(b2[6]),Float.parseFloat(b2[7]),1));
-			}
-		}
+		
 		
 		if(breakdown[0].equals("lose")){f.die=true;}
 		if(breakdown[0].equals("addMass")){f.massToAdd=Float.parseFloat(breakdown[1]);}
+			}
 		f.messages.remove(i);
 		}
 		}
 		
 		/**end read messages*/
+		
+		for(int i = 0;i<f.players.size();i++){
+			f.players.get(i).render();
+		}
+		
+		
+		try{
 		for(int j =0;j<f.players.size();j++){
 		for(int i =0;i<f.players.size()-1;i++){
 			if(f.players.get(i+1).mass>f.players.get(i).mass){
@@ -126,21 +130,25 @@ public class GameScreen implements Screen ,InputProcessor{
 			}
 		}
 		}
+		}
+		catch(Exception e){
+			
+		}
 		
-		if(f.die){f.popup();f.setScreen(new MainScreen(f));}
+		if(f.die){f.popup();/*synch.destroy();*/f.setScreen(new MainScreen(f));}
 		massToAdd+=f.massToAdd;f.massToAdd=0;
 		players.clear();players.addAll(f.players);
 		//System.out.println(players.size());
 		//food.clear();food.addAll(f.food);
 		//System.out.println(food.size());
-		mass+=.1*massToAdd;massToAdd*=.9;
-		if(mass>initMass){mass*=.9999;}
+		f.mass+=.1*massToAdd;massToAdd*=.9;
+		if(f.mass>initMass){f.mass*=.9999;}
 		Gdx.gl.glClearColor(1,1,1,1);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 		
 		//Cam Update
-		speed=(float) (speedMul/Math.pow(mass,(1/2.9)));
-		view=getRadius(mass)*10;
+		speed=(float) (speedMul/Math.pow(f.mass,(1/2.9)));
+		view=getRadius(f.mass)*10;
 		step = h/view;
 		if(isSprint){
 			if(f.sprint<=0){isSprint=false;}
@@ -153,24 +161,24 @@ public class GameScreen implements Screen ,InputProcessor{
 			if(yP){yPos+=speed;}
 			*/
 		if(theta!=361){
-		if(flip){xPos-=speed*Math.cos(theta);
-		yPos-=speed*Math.sin(theta);}
+		if(flip){f.xPos-=speed*Math.cos(theta);
+		f.yPos-=speed*Math.sin(theta);}
 			
-		else{xPos+=speed*Math.cos(theta);
-		yPos+=speed*Math.sin(theta);}
+		else{f.xPos+=speed*Math.cos(theta);
+		f.yPos+=speed*Math.sin(theta);}
 		}
 		
-			f.send("Render:"+f.name+":"+xPos+":"+yPos+":"+mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
+		
 		
 	//	System.out.println("X: " + xPos+ " Y: "+yPos+" M: " + mass);
 		
-		xOff=-xPos*step+(w/2);yOff=-yPos*step+(h/2);
+		xOff=-f.xPos*step+(w/2);yOff=-f.yPos*step+(h/2);
 		
 		//wall collision
-		if(xPos>size-getRadius(mass)){xPos=size-getRadius(mass);}
-		if(yPos>size-getRadius(mass)){yPos=size-getRadius(mass);}
-		if(xPos<getRadius(mass)){xPos=getRadius(mass);}
-		if(yPos<getRadius(mass)){yPos=getRadius(mass);}
+		if(f.xPos>size-getRadius(f.mass)){f.xPos=size-getRadius(f.mass);}
+		if(f.yPos>size-getRadius(f.mass)){f.yPos=size-getRadius(f.mass);}
+		if(f.xPos<getRadius(f.mass)){f.xPos=getRadius(f.mass);}
+		if(f.yPos<getRadius(f.mass)){f.yPos=getRadius(f.mass);}
 		
 		//Render
 		shape.begin(ShapeType.Line);
@@ -206,9 +214,9 @@ public class GameScreen implements Screen ,InputProcessor{
 			}
 			
 			shape.setColor(f.color.r*.8f,f.color.g*.8f,f.color.b*.8f,1);
-			shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
+			shape.circle(f.xPos*step+xOff, f.yPos*step+yOff, getRadius(f.mass)*step);
 			shape.setColor(f.color);
-			shape.circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step*.9f);
+			shape.circle(f.xPos*step+xOff, f.yPos*step+yOff, getRadius(f.mass)*step*.9f);
 		}
 		
 		if(isSprint){shape.setColor(Color.RED);}else{shape.setColor(Color.GREEN);}
@@ -236,13 +244,14 @@ public class GameScreen implements Screen ,InputProcessor{
 			}
 		}
 		
-		f.assets.font.setScale(h*getRadius(mass)*step/500000);
+		f.assets.font.setScale(h*getRadius(f.mass)*step/500000);
 		f.assets.font.setColor(Color.WHITE);
-		f.assets.font.draw(pic, f.name, (xPos*step+xOff)-(f.assets.font.getBounds(f.name).width/2), (yPos*step+yOff)+(f.assets.font.getBounds(f.name).height/2));
+		f.assets.font.draw(pic, f.name, (f.xPos*step+xOff)-(f.assets.font.getBounds(f.name).width/2), (f.yPos*step+yOff)+(f.assets.font.getBounds(f.name).height/2));
 		
-		
+		try{
 		f.assets.font.setScale(h/5000);
 		f.assets.font.setColor(Color.BLACK);
+		
 		f.assets.font.draw(pic, "Leaderboard:", 0, h);
 		f.assets.font.setColor(Color.YELLOW);
 		if(f.players.size()>0){f.assets.font.draw(pic, "1. "+f.players.get(0).name, 0, 19*h/20);}
@@ -254,12 +263,15 @@ public class GameScreen implements Screen ,InputProcessor{
 		if(f.players.size()>3){f.assets.font.draw(pic, "4. "+f.players.get(3).name, 0, 16*h/20);}
 		if(f.players.size()>4){f.assets.font.draw(pic, "5. "+f.players.get(4).name, 0, 15*h/20);}
 		if(f.players.size()>5){f.assets.font.draw(pic, "6. "+f.players.get(5).name, 0, 14*h/20);}
-		
+		}
+		catch(Exception e){
+			
+		}
 		pic.end();
 		
 		
 		//eat food
-		Circle t = new Circle(xPos*step+xOff, yPos*step+yOff, getRadius(mass)*step);
+		Circle t = new Circle(f.xPos*step+xOff, f.yPos*step+yOff, getRadius(f.mass)*step);
 		for(int i = 0; i < food.size();i++){
 			if(Intersector.overlaps(t, new Circle(food.get(i).x*step+xOff, food.get(i).y*step+yOff, getRadius(1)*step))){
 				
@@ -273,6 +285,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		
 		//x=0;
 		//}
+		f.isRender=false;
 	}
 	
 

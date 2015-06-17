@@ -32,13 +32,14 @@ public class MainScreen implements InputProcessor,Screen {
 	private boolean type=false;
 	private int select = 0;
 	
+	
 	public MainScreen(Fooze f){
 		this.f=f;
 		f.die=false;
 		f.nextScreen=false;
 		shape = new ShapeRenderer();
 		pic = new SpriteBatch();
-		
+		f.cState=0;
 		
 	}
 	
@@ -111,6 +112,16 @@ public class MainScreen implements InputProcessor,Screen {
 		f.assets.font.setScale(h/2000);
 		u=u.replaceAll("\\p{Cntrl}","");
 		f.assets.font.draw(pic, u, .269f*w, .74f*h);
+		
+		f.assets.font.setScale(h/3000);
+		if(f.cState==1){
+			f.assets.font.setColor(Color.WHITE);
+			f.assets.font.draw(pic, "Connecting to server...", .269f*w, .4f*h);
+		}
+		else if(f.cState==2){
+			f.assets.font.setColor(Color.RED);
+			f.assets.font.draw(pic, "Error connecting to server...", .269f*w, .4f*h);
+		}
 		
 		pic.end();
 		
@@ -223,6 +234,8 @@ public class MainScreen implements InputProcessor,Screen {
 		for(int i = 0;i<100;i++){
 		f.send("Connect");
 		}
+		
+		
 		}
 		
 		return true;

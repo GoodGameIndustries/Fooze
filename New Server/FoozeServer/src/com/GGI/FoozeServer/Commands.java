@@ -22,6 +22,9 @@ public void run() {
 		if(str.equals("online")){
 			System.out.println(db+"Time: "+d.toString()+"\n\t\t Connections: "+f.clients.size());
 		}
+		else if(str.equals("restart")){
+			System.exit(0);
+		}
 		else{
 			System.out.println(db+"No command found");
 		}

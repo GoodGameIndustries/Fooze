@@ -16,6 +16,9 @@ public class Player extends Vector2{
 	public String name = "";
 	public Color color = Color.RED;
 	public int ID = -1;
+	public float dX=0;
+	public float dY=0;
+	public boolean updated=true;
 	
 	public Player(String name, float mass, int ID, Color color){
 		this.name=name;
@@ -24,6 +27,11 @@ public class Player extends Vector2{
 		this.color=color;
 		x=0;
 		y=0;
+	}
+	
+	public void render(){
+		x+=.05*(dX-x);
+		y+=.05*(dY-y);
 	}
 	
 }

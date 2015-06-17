@@ -23,7 +23,7 @@ public class Connector implements Runnable{
 				Socket rClient = s.rServer.accept(null);
 					try {
 						String message = new BufferedReader(new InputStreamReader(rClient.getInputStream())).readLine();
-						System.out.println(message);
+						//System.out.println(message);
 						if(message.equals("Connect")){
 						sClient.getOutputStream().write("Connected\n".getBytes());
 						
