@@ -69,8 +69,10 @@ public class GameScreen implements Screen ,InputProcessor{
 		f.yPos=(float) (Math.random()*size*.8+.1*size);
 		
 		populate();
-		synch=new Thread(new Synch(f));
-		synch.start();
+		//synch=new Thread(new Synch(f));
+		//synch.start();
+		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
+		
 	}
 	
 	private float getRadius(float mass){
@@ -166,6 +168,9 @@ public class GameScreen implements Screen ,InputProcessor{
 			
 		else{f.xPos+=speed*Math.cos(theta);
 		f.yPos+=speed*Math.sin(theta);}
+		
+		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
+		System.out.println("Render");
 		}
 		
 		

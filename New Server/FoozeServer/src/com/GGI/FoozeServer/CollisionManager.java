@@ -19,11 +19,16 @@ public class CollisionManager implements Runnable{
 	public void run() {
 		while(true){
 			//System.out.println("Collide Check");
+			if(s.broadcast){
 			try{
 			System.out.print("");
 		for(int i = 0; i < s.clients.size()-1;i++){
 			//System.out.println("Checking");
 			Reader c1 = s.clients.get(i);
+			
+			
+			
+			
 			for(int j = i+1;j<s.clients.size();j++){
 				Reader c2 = s.clients.get(j);
 			//if(Intersector.overlapCircles(new Circle(c1.x,c1.y,getRadius(c1.mass)), new Circle(c2.x,c2.y,getRadius(c2.mass)))){
@@ -44,7 +49,7 @@ public class CollisionManager implements Runnable{
 					}
 					c2.se.send("addMass:"+c1.mass);
 					s.clients.remove(c1);}
-			
+				
 			
 			//}
 				
@@ -55,6 +60,13 @@ public class CollisionManager implements Runnable{
 		}
 			catch(Exception e){
 				System.out.println("Collison Issue");
+			}
+			}
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		
 	}

@@ -39,6 +39,7 @@ public class FoozeServer extends ApplicationAdapter {
 	public ArrayList<Color> colors = new ArrayList<Color>();
 	public long lastTime = System.currentTimeMillis();
 	public long begin = System.currentTimeMillis();
+	public boolean broadcast = false;
 	
 	
 	

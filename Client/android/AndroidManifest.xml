@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.GGI.Fooze.android"
-    android:versionCode="6"
-    android:versionName="6.0" >
+    android:versionCode="7"
+    android:versionName="7.0" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="19" />
 
     <application
         android:allowBackup="true"

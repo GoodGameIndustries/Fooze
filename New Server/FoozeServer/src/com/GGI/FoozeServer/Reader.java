@@ -54,6 +54,7 @@ public class Reader implements Runnable{
 				lastTime = System.currentTimeMillis();
 				String[] breakdown=message.split(":");
 				if(breakdown[0].equals("Render")){
+					
 					try{
 					s.lastTime = System.currentTimeMillis();
 					name=breakdown[1];
@@ -63,9 +64,11 @@ public class Reader implements Runnable{
 					ID=Integer.parseInt(breakdown[5]);
 					color=new Color(Float.parseFloat(breakdown[6]),Float.parseFloat(breakdown[7]),Float.parseFloat(breakdown[8]),1);
 					}
+					
 					catch(Exception e){
 						//System.out.println("Render issue");
 					}
+					s.broadcast=true;
 					
 					//se.send("Food"+s.listToString(s.food));	
 				//se.send("Players"+s.listToString(s.clients));	

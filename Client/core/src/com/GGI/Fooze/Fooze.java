@@ -61,8 +61,8 @@ public class Fooze extends Game {
 			sClient.getOutputStream().write(s.getBytes());
 			//System.out.println("sent: " + s);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			die=true;
+			//e.printStackTrace();
 		}
 		
 	}
@@ -75,7 +75,10 @@ public class Fooze extends Game {
 		try {
 			sClient.getOutputStream().write("Connect\n".getBytes());
 			String response = new BufferedReader(new InputStreamReader(rClient.getInputStream())).readLine();
-			System.out.println(response);
+			if(response!=null){System.out.println(response);}
+			else{
+				connect();
+			}
 		} catch (IOException e) {
 			cState=2;
 			System.out.println("an error occured");
