@@ -109,7 +109,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		
 		
 		if(breakdown[0].equals("lose")){f.die=true;}
-		if(breakdown[0].equals("addMass")){f.massToAdd=Float.parseFloat(breakdown[1]);}
+		if(breakdown[0].equals("addMass")){f.massToAdd=Float.parseFloat(breakdown[1]);f.money+=(int)(Float.parseFloat(breakdown[1]));f.save();}
 			}
 		f.messages.remove(i);
 		}
@@ -282,6 +282,8 @@ public class GameScreen implements Screen ,InputProcessor{
 				
 				food.remove(i);
 				massToAdd+=1f;
+				f.money+=1;
+				f.save();
 				addFood();
 			}
 		}

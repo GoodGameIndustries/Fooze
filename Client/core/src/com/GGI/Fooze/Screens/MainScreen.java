@@ -45,6 +45,12 @@ public class MainScreen implements InputProcessor,Screen {
 	
 	@Override
 	public void render(float delta) {
+		switch(f.toolbar.select){
+		case 1:f.setScreen(new ColorScreen(f));break;
+		case 2:f.setScreen(new ShopScreen(f));break;
+		case 3:f.setScreen(new SettingsScreen(f));break;
+		}
+		
 		//System.out.println(f.r);
 		if(f.nextScreen){f.setScreen(new GameScreen(f));f.nextScreen=false;}
 		Gdx.gl.glClearColor(1,1,1,1);
@@ -82,7 +88,10 @@ public class MainScreen implements InputProcessor,Screen {
 		shape.setColor(Color.BLACK);
 		shape.triangle(.6925f*w, .72f*h, .6925f*w, .68f*h, .7125f*w, .7f*h);
 		
-		shape.setColor(Color.BLACK);
+		shape.setColor(f.color);
+		shape.rect(.618f*w, .51f*h, .05f*w, .05f*w);
+		shape.end();
+		/*shape.setColor(Color.BLACK);
 		shape.rect(.268f*w, .5f*h, .05f*w, .05f*w);
 		shape.setColor(Color.RED);
 		shape.rect(.338f*w, .5f*h, .05f*w, .05f*w);
@@ -95,12 +104,13 @@ public class MainScreen implements InputProcessor,Screen {
 		shape.setColor(Color.YELLOW);
 		shape.rect(.618f*w, .5f*h, .05f*w, .05f*w);
 		shape.end();
-		
+		*/
 		shape.begin(ShapeType.Line);
 		shape.setColor(Color.BLACK);
 		shape.rect(.268f*w,.66f*h,.4f*w,.08f*h);
-		shape.rect((.268f+(select *.07f))*w,.5f*h,.05f*w,.05f*w);
+		//shape.rect((.268f+(select *.07f))*w,.5f*h,.05f*w,.05f*w);
 		shape.end();
+		
 		
 		pic.begin();
 		f.assets.font.setColor(Color.GRAY);
@@ -112,6 +122,7 @@ public class MainScreen implements InputProcessor,Screen {
 		f.assets.font.setScale(h/2000);
 		u=u.replaceAll("\\p{Cntrl}","");
 		f.assets.font.draw(pic, u, .269f*w, .74f*h);
+		f.assets.font.draw(pic, "Selected Color- ", .269f*w, .6f*h);
 		
 		f.assets.font.setScale(h/3000);
 		if(f.cState==1){
@@ -125,6 +136,7 @@ public class MainScreen implements InputProcessor,Screen {
 		
 		pic.end();
 		
+		f.toolbar.render();
 	}
 
 	@Override
@@ -199,16 +211,19 @@ public class MainScreen implements InputProcessor,Screen {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		screenY=(int) (h-screenY);
 		Rectangle touch = new Rectangle(screenX,screenY,1,1);
+		if(screenX<w/10){f.toolbar.touch(touch);}
+		
 		if(!type){
 		
 		//Color select
+			/*
 			if(Intersector.overlaps(touch, new Rectangle(.268f*w,.5f*h,.05f*w,.05f*w))){select=0;}
 			else if(Intersector.overlaps(touch, new Rectangle(.338f*w,.5f*h,.05f*w,.05f*w))){select=1;}
 			else if(Intersector.overlaps(touch, new Rectangle(.408f*w,.5f*h,.05f*w,.05f*w))){select=2;}
 			else if(Intersector.overlaps(touch, new Rectangle(.478f*w,.5f*h,.05f*w,.05f*w))){select=3;}
 			else if(Intersector.overlaps(touch, new Rectangle(.548f*w,.5f*h,.05f*w,.05f*w))){select=4;}
 			else if(Intersector.overlaps(touch, new Rectangle(.618f*w,.5f*h,.05f*w,.05f*w))){select=5;}
-			
+			*/
 			Rectangle name = new Rectangle(.268f*w,.66f*h,.4f*w,.08f*h);
 		if(Intersector.overlaps(touch, name)){
 			type = true;

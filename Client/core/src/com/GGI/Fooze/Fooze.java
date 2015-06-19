@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import com.GGI.Fooze.Objects.Food;
 import com.GGI.Fooze.Objects.Player;
 import com.GGI.Fooze.Screens.MainScreen;
+import com.GGI.Fooze.Screens.Toolbar;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net.Protocol;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.net.SocketHints;
@@ -41,6 +43,9 @@ public class Fooze extends Game {
 	public float mass=10;
 	public int cState=0;
 	public boolean isRender=false;
+	public Toolbar toolbar;
+	public int money =0;
+	public int unlock = 0;
 	public Fooze(ActionResolver androidLauncher){
 		this.actionResolver=androidLauncher;
 	}
@@ -53,6 +58,7 @@ public class Fooze extends Game {
 	public void create () {
 		assets = new Assets(this);
 		this.setScreen(new MainScreen(this));
+		toolbar=new Toolbar(this);
 	}
 
 	public void send(String s){
@@ -79,12 +85,18 @@ public class Fooze extends Game {
 			else{
 				connect();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			cState=2;
 			System.out.println("an error occured");
 		}
 		
 		new Thread(new Reader(this,rClient)).start();
+	}
+
+	public void save() {
+		FileHandle file = Gdx.files.local("Stats.txt");
+		file.writeString(money+":"+color.r+":"+color.g+":"+color.b+":"+unlock, false);
+		
 	}
 	
 
