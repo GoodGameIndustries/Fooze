@@ -33,7 +33,7 @@ public class FoozeServer extends ApplicationAdapter {
 	
 	//world vars
 	public float gridx =20,gridy=20;
-	public float size=500;
+	public float size=750;
 	
 	public ArrayList<Food> food = new ArrayList<Food>();
 	public ArrayList<Color> colors = new ArrayList<Color>();

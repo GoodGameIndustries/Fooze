@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.badlogic.gdx.net.Socket;
+import com.badlogic.gdx.net.SocketHints;
 
 public class Connector implements Runnable{
 
@@ -19,8 +20,11 @@ public class Connector implements Runnable{
 		while(true){
 			//listen for new connections
 			try{
-				Socket sClient = s.sServer.accept(null);
-				Socket rClient = s.rServer.accept(null);
+				SocketHints hints = new SocketHints();
+				hints.tcpNoDelay=true;
+				hints.trafficClass=0x10;
+				Socket sClient = s.sServer.accept(hints);
+				Socket rClient = s.rServer.accept(hints);
 					try {
 						String message = new BufferedReader(new InputStreamReader(rClient.getInputStream())).readLine();
 						//System.out.println(message);

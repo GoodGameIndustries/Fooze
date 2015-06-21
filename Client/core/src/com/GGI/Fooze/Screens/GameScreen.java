@@ -53,6 +53,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	public float theta=361;
 	public boolean flip = false;
 	public Thread synch;
+	private int t=0;
 	
 	public GameScreen(Fooze f){
 		this.f=f;
@@ -61,7 +62,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		f.messages.clear();
 		pic=new SpriteBatch();
 		shape=new ShapeRenderer();
-		
+		f.mass=10;
 		view=getRadius(f.mass)*10;
 		step = h/view;
 		System.out.println(view);
@@ -71,6 +72,8 @@ public class GameScreen implements Screen ,InputProcessor{
 		populate();
 		//synch=new Thread(new Synch(f));
 		//synch.start();
+		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
+		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
 		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
 		
 	}
@@ -137,7 +140,9 @@ public class GameScreen implements Screen ,InputProcessor{
 			
 		}
 		
-		if(f.die){f.popup();/*synch.destroy();*/f.setScreen(new MainScreen(f));}
+		
+		
+		
 		massToAdd+=f.massToAdd;f.massToAdd=0;
 		players.clear();players.addAll(f.players);
 		//System.out.println(players.size());
@@ -292,6 +297,28 @@ public class GameScreen implements Screen ,InputProcessor{
 		
 		//x=0;
 		//}
+		
+		
+		if(f.die){f.popup();/*synch.destroy();*/
+		Gdx.input.setInputProcessor(null);
+		theta=361;
+		 Gdx.gl.glEnable(GL30.GL_BLEND);
+		    Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+		  // shape.setProjectionMatrix(camera.combined);
+		   shape.begin(ShapeType.Filled);
+		   shape.setColor(new Color(0, 0, 0, 0.5f));
+		   shape.rect(0,0,w,h);
+		   shape.end();
+		   Gdx.gl.glDisable(GL30.GL_BLEND);
+		if(this.t>50){
+			pic.begin();
+			f.assets.font.setColor(Color.RED);
+		f.assets.font.setScale(w/5000);
+			f.assets.font.draw(pic, "Wasted", (w/2)-(f.assets.font.getBounds("Wasted").width/2), (h/2)+(f.assets.font.getBounds("Wasted").height/2));
+		pic.end();
+		}
+		if(this.t>200){f.setScreen(new MainScreen(f));}this.t++;}
+		
 		f.isRender=false;
 	}
 	

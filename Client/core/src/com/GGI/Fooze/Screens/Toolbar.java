@@ -68,7 +68,7 @@ public class Toolbar {
 		//settings
 		shape.setColor(Color.GRAY);
 		if(select==3){shape.setColor(Color.LIGHT_GRAY);}
-		shape.rect(settings.x,settings.y,settings.width,settings.height);
+		//shape.rect(settings.x,settings.y,settings.width,settings.height);
 		//end settings
 		shape.end();
 		
@@ -79,7 +79,7 @@ public class Toolbar {
 		f.assets.font.draw(pic, "Play", play.getCenter(center).x-(f.assets.font.getBounds("Play").width/2), play.getCenter(center).y+(f.assets.font.getBounds("Play").height/2));
 		f.assets.font.draw(pic, "Color", color.getCenter(center).x-(f.assets.font.getBounds("Color").width/2), color.getCenter(center).y+(f.assets.font.getBounds("Color").height/2));
 		f.assets.font.draw(pic, "Shop", shop.getCenter(center).x-(f.assets.font.getBounds("Shop").width/2), shop.getCenter(center).y+(f.assets.font.getBounds("Shop").height/2));
-		f.assets.font.draw(pic, "Settings", settings.getCenter(center).x-(f.assets.font.getBounds("Settings").width/2), settings.getCenter(center).y+(f.assets.font.getBounds("Settings").height/2));
+		//f.assets.font.draw(pic, "Settings", settings.getCenter(center).x-(f.assets.font.getBounds("Settings").width/2), settings.getCenter(center).y+(f.assets.font.getBounds("Settings").height/2));
 		f.assets.font.setScale(w/15000);
 		f.assets.font.draw(pic, "$"+f.money, 0, 1.4f*f.assets.font.getBounds("$"+f.money).height);
 		pic.end();
@@ -89,7 +89,7 @@ public class Toolbar {
 		if(Intersector.overlaps(touch, play)){select=0;}
 		else if(Intersector.overlaps(touch, color)){select=1;}
 		else if(Intersector.overlaps(touch, shop)){select=2;}
-		else if(Intersector.overlaps(touch, settings)){select=3;}
+		//else if(Intersector.overlaps(touch, settings)){select=3;}
 	}
 	
 }

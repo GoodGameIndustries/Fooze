@@ -75,22 +75,26 @@ public class Fooze extends Game {
 	
 	public void connect(){
 		cState=1;
+		try {
 		SocketHints hints = new SocketHints();
+		hints.tcpNoDelay=true;
+		hints.trafficClass=0x10;
 		sClient = Gdx.net.newClientSocket(Protocol.TCP, "52.11.36.209", 4443, hints);
 		rClient = Gdx.net.newClientSocket(Protocol.TCP, "52.11.36.209", 4444, hints);
-		try {
+		
 			sClient.getOutputStream().write("Connect\n".getBytes());
 			String response = new BufferedReader(new InputStreamReader(rClient.getInputStream())).readLine();
 			if(response!=null){System.out.println(response);}
 			else{
 				connect();
 			}
+		
+		
+		new Thread(new Reader(this,rClient)).start();
 		} catch (Exception e) {
 			cState=2;
 			System.out.println("an error occured");
 		}
-		
-		new Thread(new Reader(this,rClient)).start();
 	}
 
 	public void save() {

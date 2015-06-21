@@ -211,10 +211,10 @@ public class MainScreen implements InputProcessor,Screen {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		screenY=(int) (h-screenY);
 		Rectangle touch = new Rectangle(screenX,screenY,1,1);
-		if(screenX<w/10){f.toolbar.touch(touch);}
+		
 		
 		if(!type){
-		
+			if(screenX<w/10){f.toolbar.touch(touch);}
 		//Color select
 			/*
 			if(Intersector.overlaps(touch, new Rectangle(.268f*w,.5f*h,.05f*w,.05f*w))){select=0;}
@@ -236,14 +236,7 @@ public class MainScreen implements InputProcessor,Screen {
 		}
 		if(Intersector.overlaps(new Circle(.7f*w, .7f*h, .02f*w), touch)){
 		f.name=u;
-		switch(select){
-		case 0:f.color=Color.BLACK;break;
-		case 1:f.color=Color.RED;break;
-		case 2:f.color=Color.GREEN;break;
-		case 3:f.color=Color.BLUE;break;
-		case 4:f.color=Color.PURPLE;break;
-		case 5:f.color=Color.YELLOW;break;
-		}
+		
 		
 		f.connect();
 		for(int i = 0;i<100;i++){
