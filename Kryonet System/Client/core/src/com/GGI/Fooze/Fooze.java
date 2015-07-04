@@ -1,21 +1,31 @@
 package com.GGI.Fooze;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import NetworkClasses.AddCharacter;
+import NetworkClasses.AddMass;
+import NetworkClasses.Character;
+import NetworkClasses.Login;
+import NetworkClasses.Lose;
+import NetworkClasses.MoveCharacter;
+import NetworkClasses.Network;
+import NetworkClasses.RemoveCharacter;
+import NetworkClasses.UpdateCharacter;
+import NetworkClasses.World;
+
 import com.GGI.Fooze.Objects.Food;
-import com.GGI.Fooze.Objects.Player;
 import com.GGI.Fooze.Screens.MainScreen;
 import com.GGI.Fooze.Screens.Toolbar;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Net.Protocol;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.net.Socket;
-import com.badlogic.gdx.net.SocketHints;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 public class Fooze extends Game {
 
@@ -25,7 +35,7 @@ public class Fooze extends Game {
 	public float gridx =0,gridy=0;
 	public float size=0;
 	public ArrayList<Food> food = new ArrayList<Food>();
-	public ArrayList<Player> players = new ArrayList<Player>();
+	public ArrayList<Character> players = new ArrayList<Character>();
 	public boolean update=false;
 	public float massToAdd=0;
 	public boolean die=false;
@@ -46,6 +56,10 @@ public class Fooze extends Game {
 	public Toolbar toolbar;
 	public int money =0;
 	public int unlock = 0;
+	public Connect connect;
+	public int world=1;
+	public Thread t=new Thread();
+	
 	public Fooze(ActionResolver androidLauncher){
 		this.actionResolver=androidLauncher;
 	}
@@ -74,27 +88,9 @@ public class Fooze extends Game {
 	}
 	
 	public void connect(){
-		cState=1;
-		try {
-		SocketHints hints = new SocketHints();
-		hints.tcpNoDelay=true;
-		hints.trafficClass=0x10;
-		sClient = Gdx.net.newClientSocket(Protocol.TCP, "52.11.36.209", 4443, hints);
-		rClient = Gdx.net.newClientSocket(Protocol.TCP, "52.11.36.209", 4444, hints);
-		
-			sClient.getOutputStream().write("Connect\n".getBytes());
-			String response = new BufferedReader(new InputStreamReader(rClient.getInputStream())).readLine();
-			if(response!=null){System.out.println(response);}
-			else{
-				connect();
-			}
-		
-		
-		new Thread(new Reader(this,rClient)).start();
-		} catch (Exception e) {
-			cState=2;
-			System.out.println("an error occured");
-		}
+		connect = new Connect(this);
+		t=new Thread(connect);
+		t.start();
 	}
 
 	public void save() {
@@ -103,5 +99,14 @@ public class Fooze extends Game {
 		
 	}
 	
-
+	
+	
+	public void setScreen(int i) {
+		switch(i){
+		case 1:nextScreen=true;break;
+		}
+		
+	}
+	
+	
 }

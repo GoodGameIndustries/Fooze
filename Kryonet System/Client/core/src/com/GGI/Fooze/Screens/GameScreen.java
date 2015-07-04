@@ -5,8 +5,10 @@ package com.GGI.Fooze.Screens;
 
 import java.util.ArrayList;
 
+import NetworkClasses.Character;
+import NetworkClasses.MoveCharacter;
+
 import com.GGI.Fooze.Fooze;
-import com.GGI.Fooze.Synch;
 import com.GGI.Fooze.Objects.Food;
 import com.GGI.Fooze.Objects.Player;
 import com.badlogic.gdx.Gdx;
@@ -37,7 +39,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	public float xOff=0,yOff=0;
 	public boolean xM=false,xP=false,yM=false,yP=false;
 	public ArrayList<Food> food = new ArrayList<Food>();
-	public ArrayList<Player> players = new ArrayList<Player>();
+	public ArrayList<Character> players = new ArrayList<Character>();
 	public ArrayList<Color> colors = new ArrayList<Color>();
 	public SpriteBatch pic;
 	
@@ -54,6 +56,9 @@ public class GameScreen implements Screen ,InputProcessor{
 	public boolean flip = false;
 	public Thread synch;
 	private int t=0;
+	private int r=0;
+	private int s=0;
+	private boolean move=false;
 	
 	public GameScreen(Fooze f){
 		this.f=f;
@@ -72,12 +77,17 @@ public class GameScreen implements Screen ,InputProcessor{
 		populate();
 		//synch=new Thread(new Synch(f));
 		//synch.start();
-		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
-		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
-		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
+		//f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
+		//f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
+		//f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
 		
+		f.connect.move();
+		
+		//f.players.clear();
 	}
 	
+	
+
 	private float getRadius(float mass){
 		return (float) Math.sqrt(12*mass/Math.PI);
 	}
@@ -96,8 +106,19 @@ public class GameScreen implements Screen ,InputProcessor{
 	@Override
 	public void render(float delta) {
 		f.isRender=true;
+		if(f.players.size()==0){f.connect.updateAll();s++;}
+		//if(s>5){f.die=true;}
+		
+		for(int i = 0;i<f.players.size()-1;i++){
+			for(int j=1;j<f.players.size();j++){
+				if(f.players.get(i).id==f.players.get(j).id){f.players.remove(j);}
+			}
+		}
+		
+		
 		//System.out.println(f.r);
 		/**Read messages*/
+		/*
 		if(f.messages.size()>0){
 		for(int i = 0; i <Math.round((f.messages.size()/10)+1);i++){
 			if(f.messages.get(i)!=null){
@@ -117,8 +138,10 @@ public class GameScreen implements Screen ,InputProcessor{
 		f.messages.remove(i);
 		}
 		}
-		
+		*/
 		/**end read messages*/
+		
+		
 		
 		for(int i = 0;i<f.players.size();i++){
 			f.players.get(i).render();
@@ -129,7 +152,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		for(int j =0;j<f.players.size();j++){
 		for(int i =0;i<f.players.size()-1;i++){
 			if(f.players.get(i+1).mass>f.players.get(i).mass){
-				Player temp = f.players.get(i+1);
+				Character temp = f.players.get(i+1);
 				f.players.remove(i+1);
 				f.players.add(i, temp);
 			}
@@ -174,8 +197,17 @@ public class GameScreen implements Screen ,InputProcessor{
 		else{f.xPos+=speed*Math.cos(theta);
 		f.yPos+=speed*Math.sin(theta);}
 		
-		f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
-		System.out.println("Render");
+		//f.send("Render:"+f.name+":"+f.xPos+":"+f.yPos+":"+f.mass+":"+f.ID+":"+f.color.r+":"+f.color.g+":"+f.color.b);
+		move=true;
+		//System.out.println("Render");
+		}
+		
+		if(move){
+			if(r>5){
+			f.connect.move();
+			r=0;
+			move=false;
+			}else{r++;}
 		}
 		
 		
@@ -210,14 +242,16 @@ public class GameScreen implements Screen ,InputProcessor{
 		}
 		
 		
-		
+		//System.out.println(players.size());
 		for(int i =0;i<players.size();i++){
-			Player p = players.get(i);
-			if(p!=null&&p.ID!=f.ID){
+			Character p = players.get(i);
+			if(p!=null&&p.id!=f.ID){
 				
-			shape.setColor(p.color.r*.8f,p.color.g*.8f,p.color.b*.8f,1);
+				Color color = new Color(p.r,p.g,p.b,1);
+				
+			shape.setColor(color.r*.8f,color.g*.8f,color.b*.8f,1);
 			shape.circle(p.x*step+xOff, p.y*step+yOff, getRadius(p.mass)*step);
-			shape.setColor(p.color);
+			shape.setColor(color);
 			shape.circle(p.x*step+xOff, p.y*step+yOff, getRadius(p.mass)*step*.9f);
 			
 			
@@ -243,8 +277,8 @@ public class GameScreen implements Screen ,InputProcessor{
 		
 		pic.begin();
 		for(int i =0;i<players.size();i++){
-			Player p = players.get(i);
-			if(p!=null&&p.mass!=0&&p.ID!=f.ID){
+			Character p = players.get(i);
+			if(p!=null&&p.mass!=0&&p.id!=f.ID){
 			f.assets.font.setScale(h*getRadius(p.mass)*step/500000);
 			f.assets.font.setColor(Color.WHITE);
 			
@@ -262,6 +296,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		f.assets.font.setScale(h/5000);
 		f.assets.font.setColor(Color.BLACK);
 		
+		//System.out.println(f.players.size());
 		f.assets.font.draw(pic, "Leaderboard:", 0, h);
 		f.assets.font.setColor(Color.YELLOW);
 		if(f.players.size()>0){f.assets.font.draw(pic, "1. "+f.players.get(0).name, 0, 19*h/20);}

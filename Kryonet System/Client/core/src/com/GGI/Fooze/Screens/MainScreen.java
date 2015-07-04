@@ -40,7 +40,11 @@ public class MainScreen implements InputProcessor,Screen {
 		shape = new ShapeRenderer();
 		pic = new SpriteBatch();
 		f.cState=0;
-		
+		f.players.clear();
+		try{
+		f.t.stop();
+		f.connect=null;
+		}catch(Exception e){}
 	}
 	
 	@Override

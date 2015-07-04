@@ -23,6 +23,9 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.MulticastLock;
+import android.content.Context;
 
 public class AndroidLauncher extends AndroidApplication implements ActionResolver {
 
@@ -32,10 +35,15 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
   protected AdView adView;
   protected View gameView;
   private InterstitialAd interstitialAd;
-
+  MulticastLock multicastLock = null;
+  WifiManager wifi = null;
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+	multicastLock = wifi.createMulticastLock("multicastLock");
+	multicastLock.setReferenceCounted(true);
+	multicastLock.acquire();
 
     AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
     cfg.useAccelerometer = false;
@@ -137,7 +145,10 @@ public class AndroidLauncher extends AndroidApplication implements ActionResolve
   public void onDestroy() {
     if (adView != null) adView.destroy();
     super.onDestroy();
+    multicastLock.release();
   }
+  
+
 
   @Override
   public void onBackPressed() {

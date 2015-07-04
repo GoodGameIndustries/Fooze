@@ -59,8 +59,10 @@ public class FoozeServer extends ApplicationAdapter {
 		}
 		
 		System.out.println("Server Starting");
-		rServer = Gdx.net.newServerSocket(Protocol.TCP, 4443, hints);
-		sServer = Gdx.net.newServerSocket(Protocol.TCP, 4444, hints);
+		//rServer = Gdx.net.newServerSocket(Protocol.TCP, 4443, hints);
+		//sServer = Gdx.net.newServerSocket(Protocol.TCP, 4444, hints);
+		Server server = new Server();
+		
 		System.out.println("	Server sockets created...");
 		
 		new Thread(new Connector(this)).start();

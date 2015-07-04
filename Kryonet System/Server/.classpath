@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="FoozeServer-android/src"/>
+	<classpathentry kind="src" path="FoozeServer-desktop/src"/>
+	<classpathentry kind="src" path="FoozeServer/src"/>
+	<classpathentry kind="lib" path="FoozeServer-android/libs/gdx-backend-android-sources.jar"/>
+	<classpathentry kind="lib" path="FoozeServer-android/libs/gdx-backend-android.jar"/>
+	<classpathentry kind="lib" path="FoozeServer-desktop/libs/gdx-backend-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="FoozeServer-desktop/libs/gdx-backend-lwjgl-sources.jar"/>
+	<classpathentry kind="lib" path="FoozeServer-desktop/libs/gdx-backend-lwjgl.jar"/>
+	<classpathentry kind="lib" path="FoozeServer-desktop/libs/gdx-natives.jar"/>
+	<classpathentry kind="lib" path="FoozeServer/libs/gdx-sources.jar"/>
+	<classpathentry kind="lib" path="FoozeServer/libs/gdx.jar"/>
+	<classpathentry kind="lib" path="FoozeServer/libs/kryo-2.23.1-SNAPSHOT-all-debug.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="FoozeServer-desktop/bin"/>
+</classpath>
