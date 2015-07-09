@@ -22,7 +22,7 @@ public class UI extends JFrame implements ActionListener{
 	public UI(FoozeKryoServer fks){
 		super();
 		this.fks=fks;
-		
+
 		world1 = new JLabel("World1: "+fks.players1.size()+" players");
 		world2 = new JLabel("World2: "+fks.players2.size()+" players");
 		world3 = new JLabel("World3: "+fks.players3.size()+" players");
@@ -57,7 +57,7 @@ public class UI extends JFrame implements ActionListener{
 		this.setVisible(true);
 		
 		timer=new Timer();
-		timer.schedule(new Exit(), 1800000);
+		timer.schedule(new Exit(), 3600000);
 	}
 	
 	public void repaint(){
@@ -67,6 +67,8 @@ public class UI extends JFrame implements ActionListener{
 		world3.setText("World3: "+fks.players3.size()+" players");
 		world4.setText("World4: "+fks.players4.size()+" players");
 		world5.setText("World5: "+fks.players5.size()+" players");
+		
+		if(fks.players1.size()+fks.players2.size()+fks.players3.size()+fks.players4.size()+fks.players5.size()>75){System.exit(0);}
 	}
 
 	@Override

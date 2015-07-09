@@ -106,14 +106,11 @@ public class GameScreen implements Screen ,InputProcessor{
 	@Override
 	public void render(float delta) {
 		f.isRender=true;
-		if(f.players.size()==0){f.connect.updateAll();s++;}
-		//if(s>5){f.die=true;}
+		//if(f.players.size()==0){f.connect.updateAll();}
+		//if(s>100){f.connect.move();s=0;}s++;
 		
-		for(int i = 0;i<f.players.size()-1;i++){
-			for(int j=1;j<f.players.size();j++){
-				if(f.players.get(i).id==f.players.get(j).id){f.players.remove(j);}
-			}
-		}
+		
+		
 		
 		
 		//System.out.println(f.r);
@@ -148,20 +145,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		}
 		
 		
-		try{
-		for(int j =0;j<f.players.size();j++){
-		for(int i =0;i<f.players.size()-1;i++){
-			if(f.players.get(i+1).mass>f.players.get(i).mass){
-				Character temp = f.players.get(i+1);
-				f.players.remove(i+1);
-				f.players.add(i, temp);
-			}
-		}
-		}
-		}
-		catch(Exception e){
-			
-		}
+		
 		
 		
 		
@@ -203,7 +187,7 @@ public class GameScreen implements Screen ,InputProcessor{
 		}
 		
 		if(move){
-			if(r>5){
+			if(r>3){
 			f.connect.move();
 			r=0;
 			move=false;
@@ -299,15 +283,15 @@ public class GameScreen implements Screen ,InputProcessor{
 		//System.out.println(f.players.size());
 		f.assets.font.draw(pic, "Leaderboard:", 0, h);
 		f.assets.font.setColor(Color.YELLOW);
-		if(f.players.size()>0){f.assets.font.draw(pic, "1. "+f.players.get(0).name, 0, 19*h/20);}
+		if(f.leaderboards.size()>0){f.assets.font.draw(pic, "1. "+f.leaderboards.get(0).name, 0, 19*h/20);}
 		f.assets.font.setColor(Color.LIGHT_GRAY);
-		if(f.players.size()>1){f.assets.font.draw(pic, "2. "+f.players.get(1).name, 0, 18*h/20);}
+		if(f.leaderboards.size()>1){f.assets.font.draw(pic, "2. "+f.leaderboards.get(1).name, 0, 18*h/20);}
 		f.assets.font.setColor(new Color(139f/255f,69f/255f,19f/255f,1));
-		if(f.players.size()>2){f.assets.font.draw(pic, "3. "+f.players.get(2).name, 0, 17*h/20);}
+		if(f.leaderboards.size()>2){f.assets.font.draw(pic, "3. "+f.leaderboards.get(2).name, 0, 17*h/20);}
 		f.assets.font.setColor(Color.BLACK);
-		if(f.players.size()>3){f.assets.font.draw(pic, "4. "+f.players.get(3).name, 0, 16*h/20);}
-		if(f.players.size()>4){f.assets.font.draw(pic, "5. "+f.players.get(4).name, 0, 15*h/20);}
-		if(f.players.size()>5){f.assets.font.draw(pic, "6. "+f.players.get(5).name, 0, 14*h/20);}
+		if(f.leaderboards.size()>3){f.assets.font.draw(pic, "4. "+f.leaderboards.get(3).name, 0, 16*h/20);}
+		if(f.leaderboards.size()>4){f.assets.font.draw(pic, "5. "+f.leaderboards.get(4).name, 0, 15*h/20);}
+		if(f.leaderboards.size()>5){f.assets.font.draw(pic, "6. "+f.leaderboards.get(5).name, 0, 14*h/20);}
 		}
 		catch(Exception e){
 			
@@ -446,6 +430,7 @@ public class GameScreen implements Screen ,InputProcessor{
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		isSprint=false;
 		screenY=(int) (h-screenY);
+		f.connect.move();
 		theta = 361;
 		return true;
 	}

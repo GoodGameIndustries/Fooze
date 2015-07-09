@@ -5,13 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import NetworkClasses.AddCharacter;
 import NetworkClasses.AddMass;
 import NetworkClasses.Character;
 import NetworkClasses.Login;
 import NetworkClasses.Lose;
 import NetworkClasses.MoveCharacter;
 import NetworkClasses.Network;
-import NetworkClasses.UpdateAll;
+import NetworkClasses.RemoveCharacter;
 import NetworkClasses.World;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -28,11 +29,12 @@ public class FoozeKryoServer {
 	ArrayList<Character> players5 = new ArrayList<Character>();
 	World world;
 	UI ui;
+	long last = System.currentTimeMillis();
 	public FoozeKryoServer () throws IOException {
 		world = new World();
 		System.out.println("Server Staring...");
 		ui=new UI(this);
-		server = new Server() {
+		server = new Server(32768,4096) {
 			
 		
 			protected Connection newConnection () {
@@ -47,6 +49,8 @@ public class FoozeKryoServer {
 
 		server.addListener(new Listener() {
 			public void received (Connection c, Object object) {
+				
+				last = System.currentTimeMillis();
 				//System.out.println("Something received");
 				// We know all connections for this server are actually CharacterConnections.
 				CharacterConnection connection = (CharacterConnection)c;
@@ -70,8 +74,10 @@ public class FoozeKryoServer {
 					world.world=bestWorld();
 					character.world=world.world;
 					character.id=world.id;
+					try{
 					c.sendTCP(world);
-					
+					}
+					catch(Exception e){}
 					ArrayList<Character> players = new ArrayList<Character>();
 					switch(world.world){
 					case 1:players=players1;break;
@@ -82,19 +88,31 @@ public class FoozeKryoServer {
 					}
 					
 					
+					for(int i = 0;i<players.size();i++){
+						AddCharacter a = new AddCharacter();
+						a.character=players.get(i);
+						c.sendTCP(a);
+					}
+					
 					players.add(character);
 					
-					
-					UpdateAll uA = new UpdateAll();
-					uA.world=character.world;
-					uA.players=players;
-					server.sendToAllTCP(uA);
+					try{
+						AddCharacter a = new AddCharacter();
+						a.character=character;
+						for(int i = 0;i<players.size();i++){
+							server.sendToAllTCP(a);
+						}
+						
+						
+						}catch(Exception e){}
 
 					
 					//System.out.println(players1.size());
 					//System.out.println("Logged In");
 					return;
 				}
+				
+				
 				
 				
 				
@@ -126,6 +144,8 @@ public class FoozeKryoServer {
 
 					character.x =msg.x;
 					character.y =msg.y;
+					character.rX =msg.x;
+					character.rY =msg.y;
 					character.mass=msg.mass;
 					character.world=msg.world;
 					
@@ -142,10 +162,12 @@ public class FoozeKryoServer {
 					update.y = character.y;
 					server.sendToAllTCP(update);*/
 					
-					UpdateAll uA = new UpdateAll();
-					uA.world=character.world;
-					uA.players=players;
-					server.sendToAllTCP(uA);
+					
+					try{
+					server.sendToAllTCP(msg);
+					//System.out.println(c.getTcpWriteBufferSize());
+					}catch(Exception e){}
+					
 					//System.out.println("Update sent");
 					
 					return;
@@ -153,7 +175,7 @@ public class FoozeKryoServer {
 			}
 
 			private int bestWorld() {
-				int tr = 15;
+				int tr = 10;
 				if(players1.size()<tr){return 1;}
 				else if(players2.size()<tr){return 2;}
 				else if(players3.size()<tr){return 3;}
@@ -192,7 +214,7 @@ public class FoozeKryoServer {
 			}
 			
 		});
-		server.bind(Network.port,Network.udp);
+		server.bind(Network.port);
 		server.start();
 	}
 
@@ -203,6 +225,10 @@ public class FoozeKryoServer {
 	// This holds per connection state.
 	static class CharacterConnection extends Connection {
 		public Character character;
+		
+		public CharacterConnection(){
+			
+		}
 	}
 
 	public static void main (String[] args) throws IOException {
@@ -233,20 +259,22 @@ public class FoozeKryoServer {
 		}
 		
 		for(int i = 0; i < players.size()-1;i++){
-			//System.out.println("Checking");
+			//SrYstem.out.println("Checking");
 			Character c1 = players.get(i);
 			
 			
 			for(int j = i+1;j<players.size();j++){
 				Character c2 = players.get(j);
-			//if(Intersector.overlapCircles(new Circle(c1.x,c1.y,getRadius(c1.mass)), new Circle(c2.x,c2.y,getRadius(c2.mass)))){
+			//if(Intersector.overlapCircles(new Circle(c1.rX,c1.rY,getRadius(c1.mass)), new Circle(c2.rX,c2.rY,getRadius(c2.mass)))){
 				
-				if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c1.mass)&&c1.mass>c2.mass){
-					//System.out.println("Collide");
+				if(dist(c1.rX,c1.rY,c2.rX,c2.rY)<getRadius(c1.mass)&&c1.mass>c2.mass){
+					//SrYstem.out.println("Collide");
 				for(int m = 0; m < 100;m++){
 					Lose l = new Lose();
 					l.id=c2.id;
-					server.sendToAllTCP(l);
+					try{
+						server.sendToAllTCP(l);
+						}catch(Exception e){}
 					//RemoveCharacter r= new RemoveCharacter();
 					//r.id=c2.id;
 					//server.sendToAllTCP(r);
@@ -258,14 +286,21 @@ public class FoozeKryoServer {
 				AddMass a = new AddMass();
 				a.id=c1.id;
 				a.mass=c2.mass;
-				server.sendToAllTCP(a);
+				RemoveCharacter r = new RemoveCharacter();
+				r.character=c2;
+				try{
+					server.sendToAllTCP(a);
+					server.sendToAllTCP(r);
+					}catch(Exception e){}
 				players.remove(c2);}
-				else if(dist(c1.x,c1.y,c2.x,c2.y)<getRadius(c2.mass)&&c2.mass>c1.mass){
-					//System.out.println("Collide");
+				else if(dist(c1.rX,c1.rY,c2.rX,c2.rY)<getRadius(c2.mass)&&c2.mass>c1.mass){
+					//SrYstem.out.println("Collide");
 					for(int m = 0; m < 100;m++){
 						Lose l = new Lose();
 						l.id=c1.id;
-						server.sendToAllTCP(l);
+						try{
+							server.sendToAllTCP(l);
+							}catch(Exception e){}
 						//RemoveCharacter r= new RemoveCharacter();
 						//r.id=c1.id;
 						//server.sendToAllTCP(r);
@@ -277,8 +312,14 @@ public class FoozeKryoServer {
 					AddMass a = new AddMass();
 					a.id=c2.id;
 					a.mass=c1.mass;
-					server.sendToAllTCP(a);
+					RemoveCharacter r = new RemoveCharacter();
+					r.character=c1;
+					try{
+						server.sendToAllTCP(a);
+						server.sendToAllTCP(r);
+						}catch(Exception e){}
 					players.remove(c1);
+					
 					
 				}
 				

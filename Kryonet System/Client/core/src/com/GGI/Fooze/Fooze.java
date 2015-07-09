@@ -1,18 +1,8 @@
 package com.GGI.Fooze;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import NetworkClasses.AddCharacter;
-import NetworkClasses.AddMass;
 import NetworkClasses.Character;
-import NetworkClasses.Login;
-import NetworkClasses.Lose;
-import NetworkClasses.MoveCharacter;
-import NetworkClasses.Network;
-import NetworkClasses.RemoveCharacter;
-import NetworkClasses.UpdateCharacter;
-import NetworkClasses.World;
 
 import com.GGI.Fooze.Objects.Food;
 import com.GGI.Fooze.Screens.MainScreen;
@@ -22,10 +12,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.net.Socket;
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 
 public class Fooze extends Game {
 
@@ -59,6 +45,7 @@ public class Fooze extends Game {
 	public Connect connect;
 	public int world=1;
 	public Thread t=new Thread();
+	public ArrayList<Character> leaderboards = new ArrayList<Character>();
 	
 	public Fooze(ActionResolver androidLauncher){
 		this.actionResolver=androidLauncher;

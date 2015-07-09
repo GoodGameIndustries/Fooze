@@ -15,14 +15,16 @@ public class Character {
 	public float dY=0;
 	public float x;
 	public float y;
+	public float rX;
+	public float rY;
 	public boolean updated=true;
 	public int id;
 	public int world;
 	public long last = System.currentTimeMillis();
 	
 	public void render(){
-		x+=.05*(dX-x);
-		y+=.05*(dY-y);
+		x+=.1*(dX-x);
+		y+=.1*(dY-y);
 		
 	}
 }

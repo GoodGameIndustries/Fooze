@@ -10,8 +10,6 @@ import NetworkClasses.Lose;
 import NetworkClasses.MoveCharacter;
 import NetworkClasses.Network;
 import NetworkClasses.RemoveCharacter;
-import NetworkClasses.UpdateAll;
-import NetworkClasses.UpdateCharacter;
 import NetworkClasses.World;
 
 import com.esotericsoftware.kryonet.Client;
@@ -23,13 +21,15 @@ public class Connect implements Runnable{
 
 	public Fooze f;
 	public Client client;
+	public float lX=0,lY=0;
+	public int s = 0;
 	public Connect(Fooze f){
 		this.f=f;
 	}
 	
 @Override
 public void run() {
-	client = new Client();
+	client = new Client(16384, 2048);
 	
 	System.out.println("Connecting");
 	
@@ -44,7 +44,7 @@ public void run() {
 		}
 
 		public void received (Connection connection, Object object) {
-			System.out.println("Something received");
+			//System.out.println("Something received");
 			if (object instanceof World) {
 				World w = (World)object;
 				f.gridx=w.gridx;
@@ -57,14 +57,7 @@ public void run() {
 				return;
 			}
 			
-			if (object instanceof AddCharacter) {
-				AddCharacter msg = (AddCharacter)object;
-				
-				if(!f.players.contains(msg.character)){
-					addCharacter(msg.character);
-				}
-				return;
-			}
+			
 			
 			if (object instanceof Lose) {
 				Lose l = (Lose)object;
@@ -78,14 +71,63 @@ public void run() {
 				return;
 			}
 			
-			if (object instanceof RemoveCharacter) {
-				RemoveCharacter msg = (RemoveCharacter)object;
-				removeCharacter(msg.id);
+			if (object instanceof AddCharacter) {
+				AddCharacter a = (AddCharacter)object;
+				//if(a.character.world==f.world){f.players.add(a.character);}
+				addCharacter(a.character);
 				return;
 			}
+			
+			if (object instanceof RemoveCharacter) {
+				RemoveCharacter r = (RemoveCharacter)object;
+				if(f.players.contains(r.character)){
+					f.players.remove(r.character);
+				}
+				removeCharacter(r.character.id);
+				return;
+			}
+			
 
-			if (object instanceof UpdateCharacter) {
-				updateCharacter((UpdateCharacter)object);
+			if (object instanceof MoveCharacter) {
+				
+				MoveCharacter m=((MoveCharacter)object);
+				if(m.world==f.world){
+					
+					for(int i =0;i<f.players.size();i++){
+						if(f.players.get(i).id==m.id){
+							f.players.get(i).dX=m.x;
+							f.players.get(i).dY=m.y;
+							f.players.get(i).mass=m.mass;
+						}
+					}
+				}
+				
+				for(int i = 0;i<f.players.size()-1;i++){
+					for(int j=1;j<f.players.size();j++){
+						if(f.players.get(i).id==f.players.get(j).id){f.players.remove(j);}
+					}
+				}
+				
+				if(s>10){
+					s=0;
+				try{
+					for(int j =0;j<f.players.size();j++){
+					for(int i =0;i<f.players.size()-1;i++){
+						if(f.players.get(i+1).mass>f.players.get(i).mass){
+							Character temp = f.players.get(i+1);
+							f.players.remove(i+1);
+							f.players.add(i, temp);
+						}
+					}
+					}
+					f.leaderboards=f.players;
+					}
+					catch(Exception e){
+						
+					}
+				}
+				
+				s++;
 				return;
 			}
 
@@ -104,7 +146,7 @@ public void run() {
 	
 	client.start();
 	try {
-		client.connect(5000, "52.27.71.7", Network.port,Network.udp);
+		client.connect(5000, "52.27.71.7", Network.port);
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -130,7 +172,7 @@ public void addCharacter (Character character) {
 	System.out.println(character.name + " added at " + character.x + ", " + character.y);
 	}
 	}
-
+/*
 public void updateCharacter (UpdateCharacter msg) {
 	Character character=null;
 	for(int i =0;i<f.players.size();i++){
@@ -145,7 +187,7 @@ public void updateCharacter (UpdateCharacter msg) {
 	character.mass=msg.mass;
 	System.out.println(character.name + " moved to " + character.x + ", " + character.y);
 }
-
+*/
 public void removeCharacter (int id) {
 	for(int i = 0;i<f.players.size();i++){
 		if(f.players.get(i).id==id){
@@ -157,6 +199,8 @@ public void removeCharacter (int id) {
 	}
 
 public void move() {
+	
+	if(dist(lX,lY,f.xPos,f.yPos)>20){
 	MoveCharacter m = new MoveCharacter();
 	m.mass=f.mass;
 	m.x=f.xPos;
@@ -166,11 +210,15 @@ public void move() {
 	client.sendTCP(m);
 	
 	System.out.println("Move");
-	
+	}
 }
 
-public void updateAll(){
+/*public void updateAll(){
 	f.players.clear();
 	client.sendTCP(new UpdateAll());
+}*/
+
+public float dist(float x1, float y1, float x2, float y2) {
+	return (float) Math.sqrt(Math.pow(x1-x2, 2)+Math.pow(y1-y2, 2));
 }
 }
